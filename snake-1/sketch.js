@@ -36,10 +36,11 @@ let highscore = 0;
 let theme = 0;
 
 function preload() {
-  crunch = loadSound('apple.wav');
-  deathCry = loadSound('blip.wav');
-  arcade = loadFont('ARCADECLASSIC-1.TTF');
+  crunch = loadSound("assets/apple.wav");
+  deathCry = loadSound("assets/blip.wav");
+  arcade = loadFont("assets/ARCADECLASSIC-1.TTF");
 }
+
 function setup() {
   createCanvas(500, 600);
   strokeWeight(weight);
@@ -54,10 +55,10 @@ function setup() {
   apple = new Apple();
   
   directions = {
-  'w': createVector(0, -1), 
-  's': createVector(0, 1), 
-  'a': createVector(-1, 0), 
-  'd': createVector(1, 0)
+    "w": createVector(0, -1), 
+    "s": createVector(0, 1), 
+    "a": createVector(-1, 0), 
+    "d": createVector(1, 0)
   };
   
   // i may have gone overboard here
@@ -91,7 +92,7 @@ function drawStartScreen() {
   
   push();
   
-  translate((width - mapWid)/2, (height - mapWid) - (width - mapWid)/2);
+  translate((width - mapWid)/2, height - mapWid - (width - mapWid)/2);
   fill(accentColour);
   stroke(accentColour);
   rect(-weight, -weight, mapWid + weight*2, mapWid + weight*2);
@@ -367,7 +368,7 @@ function keyPressed () {
 
 function mouseClicked() {
   if (!started) {
-    let midX = ((width - mapWid)/2) + mapWid/2;
+    let midX = (width - mapWid)/2 + mapWid/2;
     //conditional that just checks if mouse is inside the play button
     if (mouseX > width/2 - 75 && mouseX < width/2 + 75 && mouseY < height - width/2 + 50 && mouseY > height - width/2 - 50) {
       dead = false;

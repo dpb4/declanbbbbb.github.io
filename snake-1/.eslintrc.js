@@ -12,7 +12,7 @@ module.exports = {
     "rules": {
         // enable additional rules
         "indent": ["warn", 2],
-        "quotes": ["warn", "double"],
+
         "semi": ["error", "always"],
         "no-extra-parens": ["warn", "all"],
         "curly": ["error", "all"],
@@ -41,6 +41,7 @@ module.exports = {
 
       //p5js globals
       "storeItem": true,
+      "p5": true,
       "getItem": true,
       "clearStorage": true,
       "removeItem": true,
