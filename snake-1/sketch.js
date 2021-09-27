@@ -91,10 +91,10 @@ function drawStartScreen() {
   
   push();
   
-  translate((width - mapWid)/2, ((height - mapWid) - (width - mapWid)/2));
+  translate((width - mapWid)/2, (height - mapWid) - (width - mapWid)/2);
   fill(accentColour);
   stroke(accentColour);
-  rect(-weight, -weight, mapWid + weight*2, mapWid + weight*2)
+  rect(-weight, -weight, mapWid + weight*2, mapWid + weight*2);
   rectMode(CENTER);
   
   stroke(bgColour);
@@ -107,7 +107,7 @@ function drawStartScreen() {
   textAlign(CENTER, CENTER);
   
   // the default kerning looks very goofy at this size so i did all this to make it nicer
-  let textWid = textWidth("PLAY")
+  let textWid = textWidth("PLAY");
   let widScale = 3;
   let widOff = 4;
   text("P", widOff + mapWid/2 - textWid/widScale - 6, mapWid/2);
@@ -134,8 +134,8 @@ function drawMap() {
   // outline rectangle
   noFill();
   stroke(accentColour);
-  rect(-weight, -weight, mapWid + weight*2, mapWid + weight*2)
-  rect(-weight*3, -weight*3, mapWid + weight*6, mapWid + weight*6)
+  rect(-weight, -weight, mapWid + weight*2, mapWid + weight*2);
+  rect(-weight*3, -weight*3, mapWid + weight*6, mapWid + weight*6);
   
   fill(accentColour);
   stroke(bgColour);
@@ -148,7 +148,7 @@ function drawMap() {
         rect(x * sf, y * sf, sf, sf);
       }
       if (debug) {
-        text(gameMap[x][y], x * sf + (sf/2), y * sf + (sf/2), sf, sf);
+        text(gameMap[x][y], x * sf + sf / 2, y * sf + sf / 2, sf, sf);
       }
     }
   }
