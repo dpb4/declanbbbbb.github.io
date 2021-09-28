@@ -1,8 +1,9 @@
+// snake
 // Declan Bainbridge
-// something
-// something
-
-// EXTRA FOR EXPERTS: sound, scroll wheel input
+// Date
+//
+// Extra for Experts:
+// - describe what you did to take this project "above and beyond"
 
 // my highscore for 20x20: 95
 // number of squares on one side

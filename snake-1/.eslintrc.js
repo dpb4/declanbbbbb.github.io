@@ -18,7 +18,7 @@ module.exports = {
         "curly": ["error", "all"],
         "eqeqeq": ["warn", "always"],
         "no-floating-decimal": ["warn"],
-        "brace-style": ["warn", "stroustrup"],
+        "brace-style": ["warn", "1tbs"],
         "no-var": ["warn"],
 
         // override default options for rules from base configurations
