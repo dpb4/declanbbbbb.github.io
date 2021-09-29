@@ -6,21 +6,31 @@
 // - describe what you did to take this project "above and beyond"
 
 
-//TODO: fix apple spawning, dfix length increase AGAIN >:[
+//TODO: make apple pretty, add start/death, make the whole game pretty
 let s;
 let a;
 let segments = [];
-let numSegs = 10;
+let numSegs = 15;
 let segLen = 5;
+let appleSafetyRad = 30;
+let segInc = 5;
+
+let snakeColour;
+let appleColour;
+let leafColor;
+
 let dir = 0;
 let speed = 2;
-let appleSafety = 10;
+let lenBuffer = 0;
 
 let dead = false;
-let debug = true;
+let debug = false;
 
 function setup() {
   createCanvas(400, 400);
+  snakeColour = color(0, 200, 127);
+  appleColour = color(232, 53, 53);
+  leafColor = color(118, 207, 50);
   
   s = new Head(width/2, height/2, 30, 0);
   segments.push(s);
@@ -37,12 +47,13 @@ function setup() {
 }
 
 function draw() {
-  background(220);
-  stroke(0, 200, 127);
-  fill(0, 200, 127);
-  
+  background(220);  
   checkInput();
   
+  a.display();
+  a.checkEaten();
+  updateLen();
+
   for (let i = 0; i < numSegs; i++) {
     if (i === 0) {
       segments[0].moveAndTurn(dir);
@@ -52,8 +63,13 @@ function draw() {
     }
     segments[i].update();
   }
-  a.display();
-  a.checkEaten();
+  
+}
+
+function keyPressed() {
+  if (key === 'x') {
+    debug = !debug;
+  }
 }
 
 function checkInput() {
@@ -80,6 +96,13 @@ function checkIntersection(p1, p2, p3, p4) {
 
   return s >= 0 && s <= 1 && t >= 0 && t <= 1;
   
+}
+
+function updateLen() {
+  if (lenBuffer !== 0) {
+    segments[0].incLength();
+    lenBuffer--;
+  }
 }
 
 

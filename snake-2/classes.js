@@ -16,6 +16,7 @@ class Segment {
   display() {
     push();
     
+    stroke(snakeColour);
     translate(this.origin.x, this.origin.y);
     strokeWeight(10);
 
@@ -28,6 +29,10 @@ class Segment {
     push();
         
     stroke(0);
+    noFill();
+    strokeWeight(1);
+    circle(this.origin.x + this.pos1.x, this.origin.y + this.pos1.y, appleSafetyRad*2);
+
     strokeWeight(2);
     line(this.origin.x, this.origin.y, this.origin.x + this.pos1.x, this.origin.y + this.pos1.y);
       
@@ -82,6 +87,8 @@ class Head extends Segment {
     push();
     
     // head
+    fill(snakeColour);
+    noStroke();
     translate(this.origin.x + this.pos1.x/2, this.origin.y + this.pos1.y/2);
     rotate(PI - atan2(this.pos1.x, this.pos1.y));
     ellipse(0, 0, 20, 30);
@@ -98,8 +105,14 @@ class Head extends Segment {
     push();
     
     stroke(0);
+
+    noFill();
+    strokeWeight(1);
+    circle(this.origin.x + this.pos1.x, this.origin.y + this.pos1.y, appleSafetyRad*2);
+
     strokeWeight(2);
     line(this.origin.x, this.origin.y, this.origin.x + this.pos1.x, this.origin.y + this.pos1.y);
+    
     
     fill(255, 0, 0);
     noStroke();
@@ -124,11 +137,10 @@ class Apple {
   }
     
   findOpenPosition() {
-    this.pos = createVector(random(0, width), random(0, height));
+    this.pos = createVector(random(this.rad, width - this.rad), random(this.rad, height - this.rad));
 
-    let successful = true;
-    for (let i = 0; i < segments.length; i++) {
-      if (this.pos.dist(segments[i].pos1) < appleSafety + this.rad) {
+    for (let i = 0; i < segments.length-1; i++) {
+      if (dist(this.pos.x, this.pos.y, segments[i].pos1.x + segments[i].origin.x, segments[i].pos1.y + segments[i].origin.y) < appleSafetyRad + this.rad) {
         this.findOpenPosition();
         break;
       }
@@ -138,21 +150,25 @@ class Apple {
   display() {
     push();
 
-    fill(255, 0, 0);
-    stroke(0, 0, 255);
-
+    // apple
+    fill(appleColour);
+    noStroke();
     ellipse(this.pos.x, this.pos.y, this.rad*2);
+
+    // leaf
+    translate(this.pos.x + 3, this.pos.y - this.rad);
+    rotate(PI/3);
+    noStroke();
+    fill(leafColor);
+    ellipse(0, 0, 5, 10);
+
     pop();
   }
 
   checkEaten() {
     if (this.pos.dist(p5.Vector.add(p5.Vector.div(segments[0].pos1, 2), segments[0].origin)) < this.rad + 10) {
-      background(0, 255, 0);
       this.findOpenPosition();
-      for (let i = 0; i < 5; i++) {
-        segments[0].incLength();
-      }
-      
+      lenBuffer += segInc;
     }
   }
 }
