@@ -6,14 +6,18 @@
 // - describe what you did to take this project "above and beyond"
 
 
-//TODO: make apple pretty, add start/death, make the whole game pretty
+//TODO: clean up translation, add start/death, check all segment[0] usage, make the whole game pretty
 let s;
 let a;
 let segments = [];
 let numSegs = 15;
 let segLen = 5;
 let appleSafetyRad = 30;
+let applePadding = 5;
 let segInc = 5;
+let gameWid = 500;
+let turnAmt;
+let trans;
 
 let snakeColour;
 let appleColour;
@@ -27,12 +31,15 @@ let dead = false;
 let debug = false;
 
 function setup() {
-  createCanvas(400, 400);
+  createCanvas(600, 800);
   snakeColour = color(0, 200, 127);
   appleColour = color(232, 53, 53);
   leafColor = color(118, 207, 50);
+
+  turnAmt = PI/32;
+  trans = createVector((width - gameWid) / 2, height - gameWid - (width - gameWid) / 2);
   
-  s = new Head(width/2, height/2, 30, 0);
+  s = new Head(gameWid/2, gameWid/2, 30, 0);
   segments.push(s);
   
   let initAngle = 0;
@@ -50,6 +57,7 @@ function draw() {
   background(220);  
   checkInput();
   
+  rect(trans.x, trans.y, gameWid, gameWid);
   a.display();
   a.checkEaten();
   updateLen();
@@ -63,7 +71,6 @@ function draw() {
     }
     segments[i].update();
   }
-  
 }
 
 function keyPressed() {
@@ -74,9 +81,9 @@ function keyPressed() {
 
 function checkInput() {
   if (keyIsDown(65) || keyIsDown(LEFT_ARROW)) { // a
-    dir = -PI/32;
+    dir = -turnAmt;
   } else if (keyIsDown(68) || keyIsDown(RIGHT_ARROW)) { // d
-    dir = PI/32;
+    dir = turnAmt;
   } else {
     dir = 0;
   }

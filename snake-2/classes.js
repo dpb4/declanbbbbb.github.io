@@ -15,7 +15,7 @@ class Segment {
     
   display() {
     push();
-    
+    translate(trans.x, trans.y);
     stroke(snakeColour);
     translate(this.origin.x, this.origin.y);
     strokeWeight(10);
@@ -27,7 +27,7 @@ class Segment {
 
   debug() {
     push();
-        
+    translate(trans.x, trans.y);
     stroke(0);
     noFill();
     strokeWeight(1);
@@ -72,7 +72,7 @@ class Head extends Segment {
       }
     }
       
-    if (this.origin.x < 0 || this.origin.x > width || this.origin.y < 0 || this.origin.y > height) {
+    if (this.origin.x < 0 || this.origin.x > gameWid || this.origin.y < 0 || this.origin.y > gameWid) {
       background(255, 0, 0);
     }
   }
@@ -85,6 +85,7 @@ class Head extends Segment {
     
   display() {
     push();
+    translate(trans.x, trans.y);
     
     // head
     fill(snakeColour);
@@ -103,7 +104,7 @@ class Head extends Segment {
 
   debug() {
     push();
-    
+    translate(trans.x, trans.y);
     stroke(0);
 
     noFill();
@@ -137,7 +138,7 @@ class Apple {
   }
     
   findOpenPosition() {
-    this.pos = createVector(random(this.rad, width - this.rad), random(this.rad, height - this.rad));
+    this.pos = createVector(random(this.rad + applePadding, gameWid - this.rad - applePadding), random(this.rad + applePadding, gameWid - this.rad - applePadding));
 
     for (let i = 0; i < segments.length-1; i++) {
       if (dist(this.pos.x, this.pos.y, segments[i].pos1.x + segments[i].origin.x, segments[i].pos1.y + segments[i].origin.y) < appleSafetyRad + this.rad) {
@@ -149,7 +150,7 @@ class Apple {
 
   display() {
     push();
-
+    translate(trans.x, trans.y);
     // apple
     fill(appleColour);
     noStroke();
