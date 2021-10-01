@@ -69,11 +69,13 @@ class Head extends Segment {
     for (let i = 1; i < numSegs; i++) {
       if (checkIntersection(this.origin, p5.Vector.add(this.origin, this.pos1), segments[i].origin, p5.Vector.add(segments[i].origin, segments[i].pos1))) {
         background(255, 0, 0);
+        score = 0;
       }
     }
       
     if (this.origin.x < 0 || this.origin.x > gameWid || this.origin.y < 0 || this.origin.y > gameWid) {
       background(255, 0, 0);
+      score = 0;
     }
   }
     
@@ -170,6 +172,7 @@ class Apple {
     if (this.pos.dist(p5.Vector.add(p5.Vector.div(segments[0].pos1, 2), segments[0].origin)) < this.rad + 10) {
       this.findOpenPosition();
       lenBuffer += segInc;
+      score++;
     }
   }
 }

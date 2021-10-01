@@ -6,7 +6,7 @@
 // - describe what you did to take this project "above and beyond"
 
 
-//TODO: clean up translation, add start/death, check all segment[0] usage, make the whole game pretty
+//TODO: add start/death, check all segment[0] usage, make the whole game pretty
 let s;
 let a;
 let segments = [];
@@ -15,7 +15,7 @@ let segLen = 5;
 let appleSafetyRad = 30;
 let applePadding = 5;
 let segInc = 5;
-let gameWid = 500;
+let gameWid = 400;
 let turnAmt;
 let trans;
 
@@ -26,18 +26,20 @@ let leafColor;
 let dir = 0;
 let speed = 2;
 let lenBuffer = 0;
+let score = 0;
 
 let dead = false;
 let debug = false;
 
 function setup() {
-  createCanvas(600, 800);
+  createCanvas(500, 600);
   snakeColour = color(0, 200, 127);
   appleColour = color(232, 53, 53);
   leafColor = color(118, 207, 50);
 
   turnAmt = PI/32;
-  trans = createVector((width - gameWid) / 2, height - gameWid - (width - gameWid) / 2);
+  let edgePadding = (width - gameWid) / 2;
+  trans = createVector(edgePadding, height - gameWid - edgePadding);
   
   s = new Head(gameWid/2, gameWid/2, 30, 0);
   segments.push(s);
@@ -57,10 +59,11 @@ function draw() {
   background(220);  
   checkInput();
   
-  rect(trans.x, trans.y, gameWid, gameWid);
+  rect(trans.x, trans.y, gameWid, gameWid); //TODO
   a.display();
   a.checkEaten();
   updateLen();
+  drawTitles();
 
   for (let i = 0; i < numSegs; i++) {
     if (i === 0) {
@@ -110,6 +113,16 @@ function updateLen() {
     segments[0].incLength();
     lenBuffer--;
   }
+}
+
+function drawTitles() {
+  push();
+  textAlign(CENTER, CENTER);
+  text(score, width/2, 120);
+
+  textSize(72);
+  text("Snake 2", width/2, 75);
+  pop();
 }
 
 
