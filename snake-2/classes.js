@@ -15,10 +15,11 @@ class Segment {
     
   display() {
     push();
+
     translate(trans.x, trans.y);
     stroke(snakeColour);
     translate(this.origin.x, this.origin.y);
-    strokeWeight(10);
+    strokeWeight(snakeWid);
 
     line(0, 0, this.pos1.x, this.pos1.y);
     
@@ -27,6 +28,7 @@ class Segment {
 
   debug() {
     push();
+
     translate(trans.x, trans.y);
     stroke(0);
     noFill();
@@ -69,14 +71,26 @@ class Head extends Segment {
     for (let i = 1; i < numSegs; i++) {
       if (checkIntersection(this.origin, p5.Vector.add(this.origin, this.pos1), segments[i].origin, p5.Vector.add(segments[i].origin, segments[i].pos1))) {
         background(255, 0, 0);
-        score = 0;
+        dead = true;
       }
     }
       
-    if (this.origin.x < 0 || this.origin.x > gameWid || this.origin.y < 0 || this.origin.y > gameWid) {
+    // puts the collision point right in the middle of the face
+    if (this.origin.x + this.pos1.x/2 < 0 || this.origin.x + this.pos1.x/2 > gameWid || this.origin.y + this.pos1.y/2 < 0 || this.origin.y + this.pos1.y/2 > gameWid) {
       background(255, 0, 0);
-      score = 0;
+      dead = true;
     }
+
+    if (dead) {
+      this.deathCleanup();
+    }
+  }
+
+  deathCleanup() {
+    highScore = max(score, highScore);
+    score = 0;
+
+    gameInit();
   }
     
   incLength() {

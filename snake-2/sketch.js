@@ -6,41 +6,96 @@
 // - describe what you did to take this project "above and beyond"
 
 
-//TODO: add start/death, check all segment[0] usage, make the whole game pretty
+//TODO: add start/death, check all segment[0] usage, make the whole game pretty, change pos1, consider adding pos1 + origin variable, consider adding pause
 let s;
 let a;
 let segments = [];
-let numSegs = 15;
-let segLen = 5;
 let appleSafetyRad = 30;
 let applePadding = 5;
 let segInc = 5;
 let gameWid = 400;
+let dir = 0;
 let turnAmt;
 let trans;
 
-let snakeColour;
 let appleColour;
 let leafColor;
 
-let dir = 0;
+let snakeColour;
+let bgColour;
+let mapColour;
+
+let numSegs;
+let segLen;
+let snakeWid;
 let speed = 2;
 let lenBuffer = 0;
 let score = 0;
+let highScore = 0;
 
 let dead = false;
 let debug = false;
 
+let signFont;
+let smallFont;
+
+function preload() {
+  signFont = loadFont("assets/SignLanguage-Regular.ttf");
+  smallFont = loadFont("assets/skinnyness.ttf");
+}
+
 function setup() {
-  createCanvas(500, 600);
+  createCanvas(500, 650);
   snakeColour = color(0, 200, 127);
   appleColour = color(232, 53, 53);
   leafColor = color(118, 207, 50);
+  bgColour = color("yellow");
+  mapColour = color("pink");
 
   turnAmt = PI/32;
+
   let edgePadding = (width - gameWid) / 2;
   trans = createVector(edgePadding, height - gameWid - edgePadding);
   
+  gameInit();
+}
+
+function draw() {
+  background(220);  
+
+  drawBg();
+  drawTitles();
+  drawMap();
+
+  if (!dead) {
+    checkInput();
+    updateLen();
+    
+    a.display();
+    a.checkEaten();
+
+    for (let i = 0; i < numSegs; i++) {
+      if (i === 0) {
+        segments[0].moveAndTurn(dir);
+        segments[0].checkDeath();
+      } else {
+        segments[i].setPos(segments[i-1].origin.x, segments[i-1].origin.y);
+      }
+      segments[i].update();
+    }
+  }
+}
+
+function gameInit() {
+  dead = false;
+  lenBuffer = 0;
+  numSegs = 5;
+  segLen = 5;
+  speed = 2;
+  snakeWid = 10;
+
+  segments = [];
+
   s = new Head(gameWid/2, gameWid/2, 30, 0);
   segments.push(s);
   
@@ -53,27 +108,6 @@ function setup() {
 
   a = new Apple(0, 0);
   a.findOpenPosition();
-}
-
-function draw() {
-  background(220);  
-  checkInput();
-  
-  rect(trans.x, trans.y, gameWid, gameWid); //TODO
-  a.display();
-  a.checkEaten();
-  updateLen();
-  drawTitles();
-
-  for (let i = 0; i < numSegs; i++) {
-    if (i === 0) {
-      segments[0].moveAndTurn(dir);
-      segments[0].checkDeath();
-    } else {
-      segments[i].setPos(segments[i-1].origin.x, segments[i-1].origin.y);
-    }
-    segments[i].update();
-  }
 }
 
 function keyPressed() {
@@ -117,12 +151,39 @@ function updateLen() {
 
 function drawTitles() {
   push();
-  textAlign(CENTER, CENTER);
-  text(score, width/2, 120);
 
-  textSize(72);
-  text("Snake 2", width/2, 75);
+  fill(mapColour);
+
+  noStroke();
+  textSize(100);
+  textAlign(CENTER, BOTTOM);
+  textFont(signFont);
+  text("snake2", width/2, trans.y+20);
+
+  textSize(36);
+  strokeWeight(1);
+  stroke(mapColour);
+  textFont(smallFont);
+
+  textAlign(RIGHT, TOP);
+  text(`SCORE: ${score}`, width-30, 30);
+
+  textAlign(LEFT, TOP);
+  text(`HIGHSCORE: ${highScore}`, 30, 30);
   pop();
 }
 
+function drawBg() {
+  background(snakeColour);
 
+  fill(bgColour);
+  strokeWeight(3);
+  stroke(mapColour);
+  rect(15, 15, width-30, height-30, 20);
+}
+
+function drawMap() {
+  stroke(mapColour);
+  fill(mapColour);
+  rect(trans.x, trans.y, gameWid, gameWid, 15);
+}
