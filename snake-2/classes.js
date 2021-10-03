@@ -90,6 +90,7 @@ class Head extends Segment {
     highScore = max(score, highScore);
     score = 0;
 
+    started = false;
     gameInit();
   }
     

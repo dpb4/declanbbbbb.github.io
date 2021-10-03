@@ -87,6 +87,36 @@ function setup() {
   ];
 }
 
+  
+function draw() {
+  updateColours();
+    
+  if (started) {
+    // the snake only updates every 10 frames to make it slower
+    if (frameCount % 10 === 0 && !dead) {
+      background(bgColour);
+      s.update();
+      drawMap();
+      drawTitle();
+    }
+  }
+  else {
+    // before the game is started
+    drawStartScreen();
+    drawTitle();
+  }
+}
+
+function updateColours() {
+  // update colours according to the theme index and make sure the theme is >= 0 and and not out of range
+  theme = max(theme, 0); // if less than 0, become zero
+  theme %= colourList.length;
+    
+  accentColour = colourList[theme][0];
+  bgColour = colourList[theme][1];
+  appleColour = colourList[theme][2];
+}
+
 function drawStartScreen() {
   // this is all just drawing stuff that makes the start screen
   background(bgColour);

@@ -6,7 +6,7 @@
 // - describe what you did to take this project "above and beyond"
 
 
-//TODO: add start/death, check all segment[0] usage, make the whole game pretty, change pos1, consider adding pos1 + origin variable, consider adding pause
+//TODO: check all segment[0] usage, change pos1, consider adding pos1 + origin variable, consider adding pause, add sounds
 let s;
 let a;
 let segments = [];
@@ -17,6 +17,8 @@ let gameWid = 400;
 let dir = 0;
 let turnAmt;
 let trans;
+let themes;
+let curTheme = 0;
 
 let appleColour;
 let leafColor;
@@ -35,6 +37,7 @@ let highScore = 0;
 
 let dead = false;
 let debug = false;
+let started = false;
 
 let signFont;
 let smallFont;
@@ -58,16 +61,36 @@ function setup() {
   trans = createVector(edgePadding, height - gameWid - edgePadding);
   
   gameInit();
+
+  // layout: apple, snake, background, map
+  themes = [
+    [color("#ff0000"), color("#33ff00"), color("#000000"), color("#ffffff"), "RETRO"     ],
+    [color("#000000"), color("#b3d334"), color("#ec8323"), color("#794099"), "SPOOKY"    ],
+    [color("#ff9900"), color("#12a3b2"), color("#79d8d5"), color("#196084"), "OCEAN"     ],
+    [color("#ffe000"), color("#1282af"), color("#77c9ad"), color("#af081c"), "SUPERHERO" ],
+    [color("#e0e0e0"), color("#9e9e9e"), color("#606060"), color("#343B40"), "NOIR"      ],
+    [color("#c4a52e"), color("#f47e20"), color("#74c37e"), color("#124c25"), "JUNGLE"    ],
+    [color("#e51c99"), color("#60cacc"), color("#fc94ff"), color("#8c18b7"), "CANDY"     ],
+    [color("#07ff00"), color("#00cfff"), color("#fec20e"), color("#ff00ff"), "NEON"      ],
+    [color("#2E1A13"), color("#3D2E29"), color("#805D52"), color("#BA8675"), "COCO"      ],
+    [color("#550527"), color("#D4E4BC"), color("#F8AD9D"), color("#F0766A"), "FIG"       ],
+    [color("#8E9AAF"), color("#BAABC4"), color("#FEEAFA"), color("#E4B4BB"), "NEUTRAL"   ],
+    [color("#3772FF"), color("#F45D01"), color("#F7E702"), color("#38DB2A"), "KID"       ],
+    [color("#F42B03"), color("#FF88DC"), color("#91A6FF"), color("#FAFF7F"), "TOY BOX"   ]
+  ];
 }
 
 function draw() {
   background(220);  
 
+  updateColours();
   drawBg();
   drawTitles();
   drawMap();
-
-  if (!dead) {
+  if (!started) {
+    drawButton();
+  }
+  if (!dead && started) {
     checkInput();
     updateLen();
     
@@ -84,6 +107,7 @@ function draw() {
       segments[i].update();
     }
   }
+  
 }
 
 function gameInit() {
@@ -170,6 +194,10 @@ function drawTitles() {
 
   textAlign(LEFT, TOP);
   text(`HIGHSCORE: ${highScore}`, 30, 30);
+
+  textSize(24);
+  textAlign(LEFT, BOTTOM);
+  text(`THEME: ${themes[curTheme][4]}`, 30, height-18);
   pop();
 }
 
@@ -186,4 +214,50 @@ function drawMap() {
   stroke(mapColour);
   fill(mapColour);
   rect(trans.x, trans.y, gameWid, gameWid, 15);
+}
+
+function mouseWheel(event) {
+  // change the theme up or down according to the scroll
+  curTheme += ceil(-event.delta/100);
+  
+  // loop back around
+  if (curTheme < 0) {
+    curTheme = themes.length-1;
+  }
+
+  return false;
+}
+
+function updateColours() {
+  // update colours according to the theme index and make sure the theme is >= 0 and and not out of range
+  curTheme %= themes.length;
+  
+  appleColour = themes[curTheme][0];
+  snakeColour = themes[curTheme][1];
+  bgColour = themes[curTheme][2];
+  mapColour = themes[curTheme][3];
+}
+
+function drawButton() {
+  push();
+  translate(trans.x, trans.y);
+  fill(appleColour);
+  rectMode(CENTER);
+  rect(gameWid/2, gameWid/2, 175, 100, 15);
+
+  fill(mapColour);
+  stroke(mapColour);
+  strokeWeight(3);
+  textAlign(CENTER, CENTER);
+  textFont(smallFont);
+  textSize(72);
+  text("START", gameWid/2, gameWid/2);
+
+  pop();
+}
+
+function mousePressed() {
+  if (!started && mouseX > trans.x + gameWid/2 - 175/2 && mouseX < trans.x + gameWid/2 + 175/2 && mouseY > trans.x + gameWid/2 - 50 && trans.x + gameWid/2 + 50) {
+    started = true;
+  }
 }
