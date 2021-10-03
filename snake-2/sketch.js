@@ -6,34 +6,37 @@
 // - describe what you did to take this project "above and beyond"
 
 
-//TODO: check all segment[0] usage, change pos1, consider adding pos1 + origin variable, consider adding pause, add sounds
-let s;
-let a;
-let segments = [];
-let appleSafetyRad = 30;
-let applePadding = 5;
-let segInc = 5;
-let gameWid = 400;
-let dir = 0;
-let turnAmt;
-let trans;
-let themes;
+//TODO: consider adding pause, add sounds, clean code
+
+// variables that shouldn't be changed
+let s; // snake head
+let a; // apple
+
+let segments = []; // the list of segments
+let dir = 0; // used every frame to turn the snake
+let turnAmt; // amount the snake turns
+let trans; // translation for the game board, used in every draw function
+let themes; // list of themes
 let curTheme = 0;
+let numSegs; // total number of segments
+let lenBuffer = 0; // how many segments are being added currently
+let score = 0;
+let highScore = 0;
 
 let appleColour;
-let leafColor;
-
+let leafColour;
 let snakeColour;
 let bgColour;
 let mapColour;
 
-let numSegs;
-let segLen;
-let snakeWid;
+// variables that CAN be changed
 let speed = 2;
-let lenBuffer = 0;
-let score = 0;
-let highScore = 0;
+let segLen = 5; // length of each segment
+let snakeWid = 10; // width of snake
+let appleSafetyRad = 30; // how close apple can spawn to snake
+let applePadding = 5; // how far apple should stay from the walls
+let segInc = 5; // how many segments are added every time an apple is eaten
+let gameWid = 400; // width of the game area
 
 let dead = false;
 let debug = false;
@@ -49,11 +52,7 @@ function preload() {
 
 function setup() {
   createCanvas(500, 650);
-  snakeColour = color(0, 200, 127);
-  appleColour = color(232, 53, 53);
-  leafColor = color(118, 207, 50);
-  bgColour = color("yellow");
-  mapColour = color("pink");
+  leafColour = color(0, 255, 0); // the leaf colour doesn't change with the theme
 
   turnAmt = PI/32;
 
@@ -63,6 +62,7 @@ function setup() {
   gameInit();
 
   // layout: apple, snake, background, map
+  // i opted for hex this time because its nicer in a lot of ways
   themes = [
     [color("#ff0000"), color("#33ff00"), color("#000000"), color("#ffffff"), "RETRO"     ],
     [color("#000000"), color("#b3d334"), color("#ec8323"), color("#794099"), "SPOOKY"    ],
@@ -87,23 +87,27 @@ function draw() {
   drawBg();
   drawTitles();
   drawMap();
+
   if (!started) {
     drawButton();
   }
+
   if (!dead && started) {
     checkInput();
-    updateLen();
+    updateLen(); // use lenbuffer to add to the length of the snake
     
-    a.display();
-    a.checkEaten();
+    // update the apple
+    a.update();
 
     for (let i = 0; i < numSegs; i++) {
-      if (i === 0) {
+      if (i === 0) { // if its the first entry, aka the head
         segments[0].moveAndTurn(dir);
         segments[0].checkDeath();
-      } else {
+      } else { // if its any part of the body
         segments[i].setPos(segments[i-1].origin.x, segments[i-1].origin.y);
       }
+
+      // regardless, update
       segments[i].update();
     }
   }
@@ -111,36 +115,39 @@ function draw() {
 }
 
 function gameInit() {
+  // this sets everything up to start the game, called in setup and everytime you die
   dead = false;
   lenBuffer = 0;
   numSegs = 5;
-  segLen = 5;
-  speed = 2;
-  snakeWid = 10;
 
-  segments = [];
+  segments = []; // empty the segments
 
-  s = new Head(gameWid/2, gameWid/2, 30, 0);
+  // initialize the head
+  s = new Head(gameWid/2, gameWid/2, 25, 0);
   segments.push(s);
   
-  let initAngle = 0;
-  
-  for (let i = 1; i < numSegs; i++) {
+  let initAngle = 0; // the angle that the segments will spawn with
+
+  // initialize the segments as many times as requested
+  for (let i = 1; i < numSegs; i++) { 
     let seg = new Segment(segments[i-1].origin.x - segLen*cos(initAngle), segments[i-1].origin.y - segLen*sin(initAngle), segLen, 0);
     segments.push(seg);
   }
 
-  a = new Apple(0, 0);
+  // initialize the apple
+  a = new Apple(0, 0); 
   a.findOpenPosition();
 }
 
 function keyPressed() {
+  // this just toggles debug mode
   if (key === 'x') {
     debug = !debug;
   }
 }
 
 function checkInput() {
+  // this checks for a/d and changes dir accordingly
   if (keyIsDown(65) || keyIsDown(LEFT_ARROW)) { // a
     dir = -turnAmt;
   } else if (keyIsDown(68) || keyIsDown(RIGHT_ARROW)) { // d
@@ -148,13 +155,11 @@ function checkInput() {
   } else {
     dir = 0;
   }
-  if (keyIsDown(32)) {
-    segments[0].incLength();
-  }
 }
 
 function checkIntersection(p1, p2, p3, p4) {
   // solution adapted from: https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+  // it basically converts each line segment to a vector then isolates certain variables (read thread for more details lol)
   
   let v1 = p5.Vector.sub(p2, p1);
   let v2 = p5.Vector.sub(p4, p3);
@@ -163,10 +168,10 @@ function checkIntersection(p1, p2, p3, p4) {
   t = ( v2.x * (p1.y - p3.y) - v2.y * (p1.x - p3.x)) / (-v2.x * v1.y + v1.x * v2.y);
 
   return s >= 0 && s <= 1 && t >= 0 && t <= 1;
-  
 }
 
 function updateLen() {
+  // eating an apple increases the buffer by 5, then every frame it adds one segment and decreases the buffer
   if (lenBuffer !== 0) {
     segments[0].incLength();
     lenBuffer--;
@@ -174,16 +179,18 @@ function updateLen() {
 }
 
 function drawTitles() {
+  // this is responsible for drawing all the text
   push();
 
+  // main title
   fill(mapColour);
-
   noStroke();
   textSize(100);
   textAlign(CENTER, BOTTOM);
   textFont(signFont);
   text("snake2", width/2, trans.y+20);
 
+  // score and highscore
   textSize(36);
   strokeWeight(1);
   stroke(mapColour);
@@ -195,22 +202,26 @@ function drawTitles() {
   textAlign(LEFT, TOP);
   text(`HIGHSCORE: ${highScore}`, 30, 30);
 
+  // theme
   textSize(24);
   textAlign(LEFT, BOTTOM);
   text(`THEME: ${themes[curTheme][4]}`, 30, height-18);
+
   pop();
 }
 
 function drawBg() {
+  // this draws the stuff behind the game board, the background and the rounded rectangle
   background(snakeColour);
 
   fill(bgColour);
-  strokeWeight(3);
   stroke(mapColour);
+  strokeWeight(3);
   rect(15, 15, width-30, height-30, 20);
 }
 
 function drawMap() {
+  // this draws the game area where the snake stays
   stroke(mapColour);
   fill(mapColour);
   rect(trans.x, trans.y, gameWid, gameWid, 15);
@@ -224,14 +235,13 @@ function mouseWheel(event) {
   if (curTheme < 0) {
     curTheme = themes.length-1;
   }
+  curTheme %= themes.length;
 
   return false;
 }
 
 function updateColours() {
-  // update colours according to the theme index and make sure the theme is >= 0 and and not out of range
-  curTheme %= themes.length;
-  
+  // update colours according to the theme index
   appleColour = themes[curTheme][0];
   snakeColour = themes[curTheme][1];
   bgColour = themes[curTheme][2];
@@ -239,12 +249,16 @@ function updateColours() {
 }
 
 function drawButton() {
+  // this draws the start button
   push();
+
+  // the rectangle part
   translate(trans.x, trans.y);
   fill(appleColour);
   rectMode(CENTER);
   rect(gameWid/2, gameWid/2, 175, 100, 15);
 
+  // the start part
   fill(mapColour);
   stroke(mapColour);
   strokeWeight(3);
@@ -257,6 +271,8 @@ function drawButton() {
 }
 
 function mousePressed() {
+  // this controls the button pressing if the game has not started
+  // this giant conditional is because of the weird values for the edges of the button
   if (!started && mouseX > trans.x + gameWid/2 - 175/2 && mouseX < trans.x + gameWid/2 + 175/2 && mouseY > trans.x + gameWid/2 - 50 && trans.x + gameWid/2 + 50) {
     started = true;
   }
