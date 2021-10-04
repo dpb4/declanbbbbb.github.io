@@ -104,7 +104,6 @@ class Head extends Segment {
     // check if the head is out of bounds
     // the weird conditional puts the collision point right in the middle of the face
     if (this.origin.x + this.posVec.x/2 < 0 || this.origin.x + this.posVec.x/2 > gameWid || this.origin.y + this.posVec.y/2 < 0 || this.origin.y + this.posVec.y/2 > gameWid) {
-      background(255, 0, 0);
       dead = true;
     }
 
