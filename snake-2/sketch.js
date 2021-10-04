@@ -1,9 +1,11 @@
 // snake 2
 // Declan Bainbridge
-// Date
+// 10/4/21
 //
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// sound, scroll input
+
+// my highscore is 58
 
 // variables that shouldn't be changed
 let s; // snake head
@@ -31,7 +33,7 @@ let speed = 2;
 let segLen = 5; // length of each segment
 let snakeWid = 10; // width of snake
 let appleSafetyRad = 30; // how close apple can spawn to snake
-let applePadding = 5; // how far apple should stay from the walls
+let applePadding = 5; // how far apple should stay from walls
 let segInc = 5; // how many segments are added every time an apple is eaten
 let gameWid = 400; // width of the game area
 
@@ -110,7 +112,7 @@ function draw() {
         segments[i].setPos(segments[i-1].origin.x, segments[i-1].origin.y);
       }
 
-      // regardless, update
+      // regardless, update each part
       segments[i].update();
     }
   }
@@ -163,6 +165,7 @@ function checkInput() {
 function checkIntersection(p1, p2, p3, p4) {
   // solution adapted from: https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
   // it basically converts each line segment to a vector then isolates certain variables (read thread for more details lol)
+  // i dont completely understand it but it works perfectly
   
   let v1 = p5.Vector.sub(p2, p1);
   let v2 = p5.Vector.sub(p4, p3);
@@ -270,13 +273,13 @@ function drawButton() {
   textSize(72);
   text("START", gameWid/2, gameWid/2);
 
+  // instructions
   stroke(bgColour);
   fill(bgColour);
   textSize(24);
   textAlign(LEFT, BOTTOM);
   noStroke();
-  // textFont("Helvetica");
-  text("A,D or LEFT,RIGHT to move\nScroll to change themes", 5, gameWid-2);
+  text("A,D or LEFT,RIGHT to turn\nScroll to change themes", 5, gameWid-2);
 
   pop();
 }

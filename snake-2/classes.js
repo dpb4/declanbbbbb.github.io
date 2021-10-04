@@ -1,5 +1,6 @@
 class Segment {
   // every piece of the snake that isn't a head is a segment
+  // a segment is essentially just two positions that can move in certain ways
 
   constructor(x, y, len, theta) {
     this.origin = createVector(x, y); // the position of the first point
@@ -59,7 +60,7 @@ class Segment {
     circle(this.leadingPos.x, this.leadingPos.y, 3);
       
     // blue dot for the origin point
-    // you should only ever see this on the very end
+    // you should only ever see this on the very end on the snake
     fill(0, 0, 255);
     circle(this.origin.x, this.origin.y, 3);
       
@@ -158,6 +159,7 @@ class Head extends Segment {
     // draws the debug stuff for the head
     push();
     translate(trans.x, trans.y);
+    
     stroke(0);
 
     // apple no go zone

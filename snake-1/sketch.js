@@ -1,11 +1,12 @@
 // snake
 // Declan Bainbridge
-// Date
+// 10/4/21
 //
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// sounds, scroll wheel input
 
 // my highscore for 20x20: 95
+
 // number of squares on one side
 // recommended range: 10 - 50. i think 20 is the best
 let numSquares = 20;
@@ -99,8 +100,7 @@ function draw() {
       drawMap();
       drawTitle();
     }
-  }
-  else {
+  } else {
     // before the game is started
     drawStartScreen();
     drawTitle();
@@ -188,7 +188,7 @@ function drawMap() {
 }
 
 function drawTitle() {
-  //this draws all the text at the top of the screen
+  // this draws all the text at the top of the screen
   push();
   
   textAlign(CENTER, CENTER);
@@ -231,7 +231,7 @@ function keyPressed () {
 function mouseClicked() {
   if (!started) {
     let midX = (width - mapWid)/2 + mapWid/2;
-    //conditional that just checks if mouse is inside the play button
+    // conditional that just checks if mouse is inside the play button
     if (mouseX > width/2 - 75 && mouseX < width/2 + 75 && mouseY < height - width/2 + 50 && mouseY > height - width/2 - 50) {
       dead = false;
       started = true;

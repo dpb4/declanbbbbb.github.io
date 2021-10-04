@@ -6,8 +6,7 @@ class Apple {
 
   findOpenPos() {
     // find a random position on the board; if it is occupied, do it again
-    // i think if you completed the game and maxed out the snake this would break,
-    // but i am choosing to ignore that
+    // i think if you completed the game and maxed out the snake this would break, but i am choosing to ignore that
     this.pos = createVector(floor(random(0, numSquares)), floor(random(0, numSquares)));
     if (gameMap[this.pos.x][this.pos.y] !== 0 && !this.pos.equals(s.pos)) {
       this.findOpenPos();
@@ -17,11 +16,16 @@ class Apple {
   eaten() {
     // called when the apple is eaten
     crunch.play();
+
     score++;
+
     this.findOpenPos();
+
     if (debug) {
+      // print out some useful info
       console.log(this.pos.x, this.pos.y, gameMap[this.pos.x][this.pos.y]);
       if (gameMap[this.pos.x][this.pos.y] !== 0) {
+        // if the apple spawned on a occupied square (this should never happen)
         console.log("WOAH!!!!!!!!!!!!!!!!!!!");
       }
     }
@@ -128,7 +132,7 @@ class SnakeHead {
     
   update() {
     // combine all the aforementioned functions to update the snake each cycle
-    this.dir = this.nextDir; // i will explain this more below
+    this.dir = this.nextDir; // this is explained in the keypressed function
     this.move();
     this.checkDead();
       
