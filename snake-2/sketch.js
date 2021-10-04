@@ -5,9 +5,6 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-
-//TODO: consider adding pause, add sounds, clean code
-
 // variables that shouldn't be changed
 let s; // snake head
 let a; // apple
@@ -45,9 +42,15 @@ let started = false;
 let signFont;
 let smallFont;
 
+let eat;
+let die;
+
 function preload() {
   signFont = loadFont("assets/SignLanguage-Regular.ttf");
   smallFont = loadFont("assets/skinnyness.ttf");
+
+  eat = loadSound("assets/cronch.wav");
+  die = loadSound("assets/scream.mp3");
 }
 
 function setup() {
@@ -123,7 +126,7 @@ function gameInit() {
   segments = []; // empty the segments
 
   // initialize the head
-  s = new Head(gameWid/2, gameWid/2, 25, 0);
+  s = new Head(gameWid/2, gameWid/2, 20, 0);
   segments.push(s);
   
   let initAngle = 0; // the angle that the segments will spawn with
@@ -266,6 +269,14 @@ function drawButton() {
   textFont(smallFont);
   textSize(72);
   text("START", gameWid/2, gameWid/2);
+
+  stroke(bgColour);
+  fill(bgColour);
+  textSize(24);
+  textAlign(LEFT, BOTTOM);
+  noStroke();
+  // textFont("Helvetica");
+  text("A,D or LEFT,RIGHT to move\nScroll to change themes", 5, gameWid-2);
 
   pop();
 }

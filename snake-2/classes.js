@@ -109,6 +109,7 @@ class Head extends Segment {
     }
 
     if (dead) {
+      die.play(0, 1, 1, 0.3, 0.9);
       this.deathCleanup();
     }
   }
@@ -235,11 +236,12 @@ class Apple {
   checkEaten() {
     // checks if the apple should be eaten
 
-    // if the distance between the apple and the midpoint of the head is < 0
+    // if the distance between the apple and the midpoint of the head is < 0 
     if (this.pos.dist(p5.Vector.add(p5.Vector.div(segments[0].posVec, 2), segments[0].origin)) - this.rad - 10 < 0) {
       this.findOpenPosition();
       lenBuffer += segInc;
       score++;
+      eat.play();
     }
   }
 
