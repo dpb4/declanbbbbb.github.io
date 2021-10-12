@@ -8,7 +8,7 @@ let startingBoard = [
   ['p','p','p','p','p','p','p','p'],
   ['r','n','b','q','k','b','n','r']
 ];
-// TODO pawns, everything else
+// TODO en passant, castling, check, mate, everything else
 
 // white: -1
 // black: 1
@@ -67,7 +67,7 @@ function initBoard() {
     }
   }
 
-  // if on the white team, flip the moveset vertically
+  // if on the white team, flip all the moves vertically
   for (let y = 4; y < 8; y++) {
     for (let x = 0; x < 8; x++) {
       if (startingBoard[y][x] !== 0) {

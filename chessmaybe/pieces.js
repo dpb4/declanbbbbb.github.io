@@ -109,22 +109,78 @@ class Pawn extends Piece {
   constructor(x, y, team) {
     super(x, y, team);
     this.moves = [
-      [0, 1], [0, 2]
+      [ 1,  1], [-1,  1],
+      [ 0,  1], [ 0,  2]
     ];
     this.name = 'pawn';
     this.hasMoved = false;
   }
 
-  // check first round
+  checkMove(x, y, move) {
+    // overloaded to include that pawns can not take from in front of them
+    let nx = x + move[0];
+    let ny = y + move[1];
+    
+    return nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7 && pieces[ny][nx] === 0;
+    // return nx < 0 || nx > 7 || ny < 0 || ny > 7 || pieces[ny][nx] === 0;
+  }
+
+  checkFlank(x, y, move) {
+    // overloaded to include that pawns can not take from in front of them
+    let nx = x + move[0];
+    let ny = y + move[1];
+    
+    if (nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7) {
+      if (pieces[ny][nx] !== 0) {
+        return pieces[ny][nx].team === -this.team;
+      }
+    }
+    return false;
+    // return nx < 0 || nx > 7 || ny < 0 || ny > 7 || pieces[ny][nx] === 0;
+  }
+
+  // checkSideTakes() {
+  //   // TODO this seems redundant
+  //   let nx = this.x + 1;
+  //   let ny = this.y + 1;
+    
+  //   let out = [];
+  //   out.push(nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7 && pieces[ny][nx] === 0);
+
+  //   if (nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7) {
+  //     if (pieces[ny][nx] !== 0) {
+  //       out.push([1, 1]);
+  //     }
+  //   }
+
+  //   nx -= 2;
+
+  //   if (nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7) {
+  //     if (pieces[ny][nx] !== 0) {
+  //       out.push([-1, 1]);
+  //     }
+  //   }
+
+  //   return out;
+  // }
+
   getPossibleMoves() {
     // TODO check for enemies and en passant
     let possibleMoves = [];
 
     for (let i = 0; i < this.moves.length - this.hasMoved; i++) {
-      if (this.checkMove(this.x, this.y, this.moves[i])) {
-        possibleMoves.push(this.moves[i]);
+      if (i > 1) {
+        if (this.checkMove(this.x, this.y, this.moves[i])) {
+          possibleMoves.push(this.moves[i]);
+        }
+      } else {
+        if (this.checkFlank(this.x, this.y, this.moves[i])) {
+          possibleMoves.push(this.moves[i]);
+        }
       }
     }
+
+    // possibleMoves.push(this.checkSideTakes());
 
     return possibleMoves;
   }
