@@ -10,7 +10,13 @@ class Piece {
     let nx = x + move[0];
     let ny = y + move[1];
     
-    return nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7 && pieces[ny][nx] === 0;
+    if (!(nx < 0 || nx > 7 || ny < 0 || ny > 7)) {
+      if (pieces[ny][nx] === 0) {
+        return nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7;
+      }
+    }
+    // TODO: fix lol
+    return nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7 && pieces[ny][nx].team === -this.team;
     // return nx < 0 || nx > 7 || ny < 0 || ny > 7 || pieces[ny][nx] === 0;
   }
 
@@ -27,27 +33,26 @@ class Piece {
   }
 
   display() {
+    push();
+    stroke(255, 0, 0);
+    fill((1 - (this.team/2 + 0.5)) * 255);
     circle(this.x*scx + scx/2, this.y*scy + scy/2, 20);
+    pop();
   }
 }
-
-// here come the different pieces
-// I split the pieces into two categories: step pieces and free pieces
-// step: pawn, knight, king
-// free: bishop, rook, queen
 
 class FreePiece extends Piece {
   constructor(x, y, team) {
     super(x, y, team);
-    this.moves;
-    this.firstMoves; // the moves a piece can initally make
+    this.moves; // the moves a free piece can initally make
+    this.firstMoves; 
   }
 
   getPossibleMoves() {
     // this checks the initial moves a free piece can make
     let possibleMoves = [];
 
-    for (let fm of this.firstMoves) {
+    for (let fm of this.moves) {
       if (this.checkMove(this.x, this.y, fm)) {
         possibleMoves.push(fm);
       }
@@ -69,6 +74,12 @@ class FreePiece extends Piece {
     return out;
   }
 }
+
+// here come the different pieces
+// I split the pieces into two categories: step pieces and free pieces
+// step: pawn, knight, king
+// free: bishop, rook, queen
+
 class Pawn extends Piece {
   constructor(x, y, team) {
     super(x, y, team);
@@ -113,12 +124,6 @@ class Bishop extends FreePiece {
   constructor(x, y, team) {
     super(x, y, team);
     this.moves = [
-      [ 1,  1], [ 2,  2], [ 3,  3], [ 4,  4], [ 5,  5], [ 6,  6], [ 7,  7],
-      [-1,  1], [-2,  2], [-3,  3], [-4,  4], [-5,  5], [-6,  6], [-7,  7],
-      [ 1, -1], [ 2, -2], [ 3, -3], [ 4, -4], [ 5, -5], [ 6, -6], [ 7, -7],
-      [-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7]
-    ];
-    this.firstMoves = [
       [1, 1], [-1, 1], [-1, -1], [1, -1]
     ];
   }
@@ -128,12 +133,6 @@ class Rook extends FreePiece {
   constructor(x, y, team) {
     super(x, y, team);
     this.moves = [
-      [ 0,  1], [ 0,  2], [ 0,  3], [ 0,  4], [ 0,  5], [ 0,  6], [ 0,  7],
-      [-1,  0], [-2,  0], [-3,  0], [-4,  0], [-5,  0], [-6,  0], [-7,  0],
-      [ 0, -1], [ 0, -2], [ 0, -3], [ 0, -4], [ 0, -5], [ 0, -6], [ 0, -7],
-      [ 1,  0], [ 2,  0], [ 3,  0], [ 4,  0], [ 5,  0], [ 6,  0], [ 7,  0]
-    ];
-    this.firstMoves = [
       [0, 1], [-1, 0], [0, -1], [1, 0]
     ];
   }
@@ -155,17 +154,6 @@ class Queen extends FreePiece {
   constructor(x, y, team) {
     super(x, y, team);
     this.moves = [
-      [ 0,  1], [ 0,  2], [ 0,  3], [ 0,  4], [ 0,  5], [ 0,  6], [ 0,  7],
-      [-1,  0], [-2,  0], [-3,  0], [-4,  0], [-5,  0], [-6,  0], [-7,  0],
-      [ 0, -1], [ 0, -2], [ 0, -3], [ 0, -4], [ 0, -5], [ 0, -6], [ 0, -7],
-      [ 1,  0], [ 2,  0], [ 3,  0], [ 4,  0], [ 5,  0], [ 6,  0], [ 7,  0],
-      
-      [ 1,  1], [ 2,  2], [ 3,  3], [ 4,  4], [ 5,  5], [ 6,  6], [ 7,  7],
-      [-1,  1], [-2,  2], [-3,  3], [-4,  4], [-5,  5], [-6,  6], [-7,  7],
-      [ 1, -1], [ 2, -2], [ 3, -3], [ 4, -4], [ 5, -5], [ 6, -6], [ 7, -7],
-      [-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7]
-    ];
-    this.firstMoves = [
       [ 0,  1], [-1,  0], [ 0, -1], [ 1,  0],
       [ 1,  1], [-1,  1], [ 1, -1], [-1, -1]
     ];

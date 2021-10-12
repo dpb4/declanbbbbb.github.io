@@ -9,6 +9,9 @@ let startingBoard = [
   ['r','n','b','q','k','b','n','r']
 ];
 // TODO inc round, fix possible moves, everything else
+
+// white: -1
+// black: 1
 let pieces;
 
 let scx;
