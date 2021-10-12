@@ -4,6 +4,7 @@ class Piece {
     this.y = y;
     this.team = team;
     this.moves;
+    this.code;
   }
 
   checkMove(x, y, move) {
@@ -32,11 +33,28 @@ class Piece {
     return possibleMoves;
   }
 
+  move(x, y) {
+    pieces[y][x] = this;
+    pieces[this.y][this.x] = 0;
+    this.x = x;
+    this.y = y;
+
+    round++;
+    turn = -turn;
+    this.hasMoved = true;
+  }
+
   display() {
     push();
+
     stroke(255, 0, 0);
     fill((1 - (this.team/2 + 0.5)) * 255);
     circle(this.x*scx + scx/2, this.y*scy + scy/2, 20);
+
+    stroke(255);
+    textAlign(CENTER, CENTER);
+    fill(0);
+    text(this.name, this.x*scx + scx/2, this.y*scy + scy/2);
     pop();
   }
 }
@@ -45,7 +63,6 @@ class FreePiece extends Piece {
   constructor(x, y, team) {
     super(x, y, team);
     this.moves; // the moves a free piece can initally make
-    this.firstMoves; 
   }
 
   getPossibleMoves() {
@@ -66,11 +83,19 @@ class FreePiece extends Piece {
         let curMove = [possibleMoves[f][0]*i, possibleMoves[f][1]*i];
 
         if (this.checkMove(this.x, this.y, curMove)) {
-          out.push(curMove);
+          if (pieces[this.y + curMove[1]][this.x + curMove[0]].team === -this.team) {
+            out.push(curMove);
+            break;
+          } else {
+            out.push(curMove);
+          }
+          
+        } else {
+          break;
         }
+        
       }
     }
-
     return out;
   }
 }
@@ -86,21 +111,18 @@ class Pawn extends Piece {
     this.moves = [
       [0, 1], [0, 2]
     ];
+    this.name = 'pawn';
+    this.hasMoved = false;
   }
 
   // check first round
   getPossibleMoves() {
+    // TODO check for enemies and en passant
     let possibleMoves = [];
 
-    for (let i = 0; i < this.moves.length; i++) {
+    for (let i = 0; i < this.moves.length - this.hasMoved; i++) {
       if (this.checkMove(this.x, this.y, this.moves[i])) {
-        // TODO re examine
-        if (i !== 1) {
-          possibleMoves.push(this.moves[i]);
-        } else if (round === 0) {
-          possibleMoves.push(this.moves[i]);
-        }
-        
+        possibleMoves.push(this.moves[i]);
       }
     }
 
@@ -117,6 +139,7 @@ class Knight extends Piece {
       [-1, -2], [ 1, -2], 
       [ 2, -1], [ 2,  1]
     ];
+    this.name = 'knight';
   }
 }
 
@@ -126,6 +149,7 @@ class Bishop extends FreePiece {
     this.moves = [
       [1, 1], [-1, 1], [-1, -1], [1, -1]
     ];
+    this.name = 'bishop';
   }
 }
 
@@ -135,10 +159,12 @@ class Rook extends FreePiece {
     this.moves = [
       [0, 1], [-1, 0], [0, -1], [1, 0]
     ];
+    this.name = 'rook';
   }
 }
 
 class King extends Piece {
+  // check for check obvy
   constructor(x, y, team) {
     super(x, y, team);
     this.moves = [
@@ -147,6 +173,7 @@ class King extends Piece {
       [ 1,  1], [ 1, -1],
       [-1,  1], [-1, -1]
     ];
+    this.name = 'king';
   }
 }
 
@@ -157,5 +184,6 @@ class Queen extends FreePiece {
       [ 0,  1], [-1,  0], [ 0, -1], [ 1,  0],
       [ 1,  1], [-1,  1], [ 1, -1], [-1, -1]
     ];
+    this.name = 'queen';
   }
 }

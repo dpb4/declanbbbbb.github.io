@@ -3,12 +3,12 @@ let startingBoard = [
   ['p','p','p','p','p','p','p','p'],
   [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
   [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-  [ 0 , 0 , 0 ,'q', 0 , 0 , 0 , 0 ],
+  [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
   [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
   ['p','p','p','p','p','p','p','p'],
   ['r','n','b','q','k','b','n','r']
 ];
-// TODO inc round, fix possible moves, everything else
+// TODO pawns, everything else
 
 // white: -1
 // black: 1
@@ -24,6 +24,8 @@ let selectedPiece;
 let picking = true;
 let round = 0;
 
+let properSelected = false;
+
 function setup() {
   createCanvas(600, 600);
   noStroke();
@@ -37,11 +39,14 @@ function setup() {
 }
 
 function draw() {
+  properSelected = selectedPiece !== undefined && selectedPiece.team === turn;
   background(220);
   drawGrid();
   displayPieces();
 
-  if (selectedPiece !== undefined && selectedPiece.team === turn) {
+  
+
+  if (properSelected) {
     highlightMoves(selectedPiece);
   }
 }
@@ -49,6 +54,7 @@ function draw() {
 function initBoard() {
   let curTeam = 1;
   pieces = startingBoard;
+
   for (let y = 0; y < 8; y++) {
     if (y === 4) {
       curTeam = -1;
@@ -112,5 +118,27 @@ function highlightMoves(p) {
 }
 
 function mouseClicked() {
-  selectedPiece = pieces[floor(mouseY/scy)][floor(mouseX/scx)];
+  let mouseXIndex = floor(mouseX/scx);
+  let mouseYIndex = floor(mouseY/scy);
+  
+  console.log("clicked", properSelected);
+  if (properSelected) {
+    let found = false;
+    console.log("proper");
+    let moves = selectedPiece.getPossibleMoves();
+
+    for (let move of moves) {
+      if (move[0] + selectedPiece.x === mouseXIndex && move[1] + selectedPiece.y === mouseYIndex) {
+        console.log("found match:", move);
+        selectedPiece.move(mouseXIndex, mouseYIndex);
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      selectedPiece = pieces[mouseYIndex][mouseXIndex];
+    }
+  } else {
+    selectedPiece = pieces[mouseYIndex][mouseXIndex];
+  }
 }
