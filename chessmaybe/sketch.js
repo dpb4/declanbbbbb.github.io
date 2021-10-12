@@ -25,6 +25,28 @@ let picking = true;
 let round = 0;
 
 let properSelected = false;
+let sprites = [];
+function preload() {
+  // layout: sprites[team][piece][theme]
+  sprites = [
+    [
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+    ],
+    [
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+    ]
+  ];
+}
 
 function setup() {
   createCanvas(600, 600);
@@ -121,15 +143,12 @@ function mouseClicked() {
   let mouseXIndex = floor(mouseX/scx);
   let mouseYIndex = floor(mouseY/scy);
   
-  console.log("clicked", properSelected);
   if (properSelected) {
     let found = false;
-    console.log("proper");
     let moves = selectedPiece.getPossibleMoves();
 
     for (let move of moves) {
       if (move[0] + selectedPiece.x === mouseXIndex && move[1] + selectedPiece.y === mouseYIndex) {
-        console.log("found match:", move);
         selectedPiece.move(mouseXIndex, mouseYIndex);
         found = true;
         break;

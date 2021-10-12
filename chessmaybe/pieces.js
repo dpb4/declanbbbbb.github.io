@@ -49,7 +49,7 @@ class Piece {
 
     stroke(255, 0, 0);
     fill((1 - (this.team/2 + 0.5)) * 255);
-    circle(this.x*scx + scx/2, this.y*scy + scy/2, 20);
+    circle(this.x*scx + scx/2, this.y*scy + scy/2, 50);
 
     stroke(255);
     textAlign(CENTER, CENTER);
@@ -139,31 +139,6 @@ class Pawn extends Piece {
     // return nx < 0 || nx > 7 || ny < 0 || ny > 7 || pieces[ny][nx] === 0;
   }
 
-  // checkSideTakes() {
-  //   // TODO this seems redundant
-  //   let nx = this.x + 1;
-  //   let ny = this.y + 1;
-    
-  //   let out = [];
-  //   out.push(nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7 && pieces[ny][nx] === 0);
-
-  //   if (nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7) {
-  //     if (pieces[ny][nx] !== 0) {
-  //       out.push([1, 1]);
-  //     }
-  //   }
-
-  //   nx -= 2;
-
-  //   if (nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7) {
-  //     if (pieces[ny][nx] !== 0) {
-  //       out.push([-1, 1]);
-  //     }
-  //   }
-
-  //   return out;
-  // }
-
   getPossibleMoves() {
     // TODO check for enemies and en passant
     let possibleMoves = [];
@@ -172,6 +147,9 @@ class Pawn extends Piece {
       if (i > 1) {
         if (this.checkMove(this.x, this.y, this.moves[i])) {
           possibleMoves.push(this.moves[i]);
+        } else {
+          // if you can't move one, you definitely can't move two
+          break;
         }
       } else {
         if (this.checkFlank(this.x, this.y, this.moves[i])) {
