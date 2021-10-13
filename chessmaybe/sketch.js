@@ -6,7 +6,7 @@ let startingBoard = [
   [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
   [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
   ['p','p','p','p','p','p','p','p'],
-  ['r','n','b','k','q','b','n','r']
+  ['r','n','b','q','k','b','n','r']
 ];
 // TODO en passant, pawn -> queen, castling, check, mate, everything else
 
