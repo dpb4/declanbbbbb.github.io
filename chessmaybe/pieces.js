@@ -116,6 +116,27 @@ class Pawn extends Piece {
     this.hasMoved = false;
   }
 
+  move(x, y) {
+    let transformed = false;
+    
+    if (y === 0 || y === 7) {
+      pieces[y][x] = new Queen(x, y, this.team);
+      pieces[this.y][this.x] = 0;
+      transformed = true;
+    }
+
+    if (!transformed) {
+      pieces[y][x] = this;
+      pieces[this.y][this.x] = 0;
+      this.x = x;
+      this.y = y;
+    }
+    
+    round++;
+    turn = -turn;
+    this.hasMoved = true;
+  }
+
   checkMove(x, y, move) {
     // overloaded to include that pawns can not take from in front of them
     let nx = x + move[0];
