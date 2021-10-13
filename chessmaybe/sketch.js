@@ -1,14 +1,14 @@
 let startingBoard = [
-  ['r','n','b','k','q','b','n','r'],
+  ['r','n','b','q','k','b','n','r'],
   ['p','p','p','p','p','p','p','p'],
   [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
   [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
   [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
   [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
   ['p','p','p','p','p','p','p','p'],
-  ['r','n','b','q','k','b','n','r']
+  ['r','n','b','k','q','b','n','r']
 ];
-// TODO en passant, castling, check, mate, everything else
+// TODO en passant, pawn -> queen, castling, check, mate, everything else
 
 // white: -1
 // black: 1
