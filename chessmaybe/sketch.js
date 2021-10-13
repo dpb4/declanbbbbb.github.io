@@ -8,7 +8,7 @@ let startingBoard = [
   ['p','p','p','p','p','p','p','p'],
   ['r','n','b','q','k','b','n','r']
 ];
-// TODO en passant, pawn -> queen, castling, check, mate, everything else
+// TODO en passant, castling, check, mate, everything else
 
 // white: -1
 // black: 1
