@@ -12,13 +12,13 @@ module.exports = {
     "rules": {
         // enable additional rules
         "indent": ["warn", 2],
-        "quotes": ["warn", "double"],
+
         "semi": ["error", "always"],
         "no-extra-parens": ["warn", "all"],
         "curly": ["error", "all"],
         "eqeqeq": ["warn", "always"],
         "no-floating-decimal": ["warn"],
-        "brace-style": ["warn", "stroustrup"],
+        "brace-style": ["warn", "1tbs"],
         "no-var": ["warn"],
 
         // override default options for rules from base configurations
@@ -27,7 +27,8 @@ module.exports = {
 
         // disable rules from base configurations
         "no-console": "off",
-        "no-unused-vars": "off"
+        "no-unused-vars": "off",
+        "no-undef": "off"
     },
     "globals": {
       //allow direct access to the DOM without errors
@@ -41,6 +42,7 @@ module.exports = {
 
       //p5js globals
       "storeItem": true,
+      "p5": true,
       "getItem": true,
       "clearStorage": true,
       "removeItem": true,
