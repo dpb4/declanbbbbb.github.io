@@ -13,6 +13,12 @@ let grid;
 let neighbors = [[1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1], [1, 0]];
 let speed;
 
+let gun;
+
+function preload() {
+  gun = loadJSON("assets/gosper-gun.json"); // numSq = 100
+}
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
@@ -116,6 +122,9 @@ function keyPressed() {
   }
   if (keyIsDown(82)) {
     fillRandom();
+  }
+  if (key === "g") {
+    grid = gun;
   }
 }
 
