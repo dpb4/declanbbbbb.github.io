@@ -1,12 +1,12 @@
 let startingBoard = [
-  ['r','n','b','q','k','b','n','r'],
+  ['r','n','b','q', 0 ,'b','n','r'],
   ['p','p','p','p','p','p','p','p'],
   [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
   [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
   [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
   [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
   ['p','p','p','p','p','p','p','p'],
-  ['r','n','b','q','k','b','n','r']
+  ['r','n','b','q', 0 ,'b','n','r']
 ];
 // TODO en passant, castling, check, mate, everything else
 
@@ -26,6 +26,9 @@ let round = 0;
 
 let properSelected = false;
 let sprites = [];
+
+let blackKing;
+let whiteKing;
 function preload() {
   // layout: sprites[team][piece][theme]
   sprites = [
@@ -66,8 +69,6 @@ function draw() {
   drawGrid();
   displayPieces();
 
-  
-
   if (properSelected) {
     highlightMoves(selectedPiece);
   }
@@ -88,6 +89,10 @@ function initBoard() {
       }
     }
   }
+  blackKing = new King(4, 0, 1);
+  whiteKing = new King(4, 7, -1);
+  pieces[0][4] = blackKing;
+  pieces[7][4] = whiteKing;
 
   // if on the white team, flip all the moves vertically
   for (let y = 4; y < 8; y++) {
@@ -96,7 +101,6 @@ function initBoard() {
         for (let i = 0; i < pieces[y][x].moves.length; i++) {
           pieces[y][x].moves[i][1] *= -1;
         }
-        
       }
     }
   }

@@ -218,6 +218,17 @@ class Rook extends FreePiece {
   }
 }
 
+class Queen extends FreePiece {
+  constructor(x, y, team) {
+    super(x, y, team);
+    this.moves = [
+      [ 0,  1], [-1,  0], [ 0, -1], [ 1,  0],
+      [ 1,  1], [-1,  1], [ 1, -1], [-1, -1]
+    ];
+    this.name = 'queen';
+  }
+}
+
 class King extends Piece {
   // check for check obvy
   constructor(x, y, team) {
@@ -230,15 +241,22 @@ class King extends Piece {
     ];
     this.name = 'king';
   }
-}
 
-class Queen extends FreePiece {
-  constructor(x, y, team) {
-    super(x, y, team);
-    this.moves = [
-      [ 0,  1], [-1,  0], [ 0, -1], [ 1,  0],
-      [ 1,  1], [-1,  1], [ 1, -1], [-1, -1]
-    ];
-    this.name = 'queen';
+  isInCheck() {
+    for (let x = 0; x < 8; x++) {
+      for (let y = 0; y < 8; y++) {
+        if (pieces[y][x] !== 0) {
+          if (pieces[y][x].team === -this.team) {
+            let moves = pieces[y][x].getPossibleMoves();
+            for (let m of moves) {
+              if (pieces[y][x].x + m[0] === this.x && pieces[y][x].y + m[1] === this.y) {
+                return true;
+              }
+            }
+          }
+        }
+      }
+    }
+    return false;
   }
 }
