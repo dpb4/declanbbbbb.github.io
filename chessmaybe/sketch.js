@@ -8,7 +8,7 @@ let startingBoard = [
   ['p','p','p','p','p','p','p','p'],
   ['r','n','b','q', 0 ,'b','n','r']
 ];
-// TODO en passant, castling, check, mate, everything else
+// TODO getCheckedMoves() L263, en passant, castling, mate, everything else
 
 // white: -1
 // black: 1
@@ -69,7 +69,20 @@ function draw() {
   drawGrid();
   displayPieces();
 
-  if (properSelected) {
+  
+  if (turn === -1) {
+    if (whiteKing.isInCheck()) {
+      selectedPiece = whiteKing;
+      highlightMoves(whiteKing.getCheckedMoves());
+    }
+  } else {
+    if (blackKing.isInCheck()) {
+      selectedPiece = blackKing;
+      highlightMoves(blackKing.getCheckedMoves());
+    }
+  }
+
+  if (properSelected && !blackKing.isInCheck() && !whiteKing.isInCheck()) {
     highlightMoves(selectedPiece);
   }
 }
