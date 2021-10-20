@@ -8,7 +8,7 @@ let startingBoard = [
   ['p','p','p','p','p','p','p','p'],
   ['r','n','b','q', 0 ,'b','n','r']
 ];
-// TODO getCheckedMoves() L263, en passant, castling, mate, everything else
+// TODO fix repeating in draw loop (king list), en passant, castling, everything else
 
 // white: -1
 // black: 1
@@ -68,21 +68,33 @@ function draw() {
   background(220);
   drawGrid();
   displayPieces();
-
+  let checked = false;
   
   if (turn === -1) {
     if (whiteKing.isInCheck()) {
       selectedPiece = whiteKing;
-      highlightMoves(whiteKing.getCheckedMoves());
+      let checkedMoves = whiteKing.getCheckedMoves();
+      if (checkedMoves.length === 0) {
+        console.log("checkmate");
+      }
+      highlightMoves(whiteKing, checkedMoves);
+      
+      checked = true;
     }
   } else {
     if (blackKing.isInCheck()) {
       selectedPiece = blackKing;
-      highlightMoves(blackKing.getCheckedMoves());
+      let checkedMoves = blackKing.getCheckedMoves();
+      if (checkedMoves.length === 0) {
+        console.log("checkmate");
+      }
+      highlightMoves(blackKing, checkedMoves);
+
+      checked = true;
     }
   }
 
-  if (properSelected && !blackKing.isInCheck() && !whiteKing.isInCheck()) {
+  if (properSelected && !checked) {
     highlightMoves(selectedPiece);
   }
 }
@@ -142,10 +154,9 @@ function displayPieces() {
   pop();
 }
 
-function highlightMoves(p) {
+function highlightMoves(p, moves=p.getPossibleMoves()) {
   let x = p.x;
   let y = p.y;
-  let moves = p.getPossibleMoves();
 
   fill(0, 255, 0, 127);
   rect(x*scx, y*scy, scx, scy);
@@ -160,21 +171,23 @@ function mouseClicked() {
   let mouseXIndex = floor(mouseX/scx);
   let mouseYIndex = floor(mouseY/scy);
   
-  if (properSelected) {
-    let found = false;
-    let moves = selectedPiece.getPossibleMoves();
-
-    for (let move of moves) {
-      if (move[0] + selectedPiece.x === mouseXIndex && move[1] + selectedPiece.y === mouseYIndex) {
-        selectedPiece.move(mouseXIndex, mouseYIndex);
-        found = true;
-        break;
+  if (mouseX < width && mouseY < height) {
+    if (properSelected) {
+      let found = false;
+      let moves = selectedPiece.getPossibleMoves();
+  
+      for (let move of moves) {
+        if (move[0] + selectedPiece.x === mouseXIndex && move[1] + selectedPiece.y === mouseYIndex) {
+          selectedPiece.move(mouseXIndex, mouseYIndex);
+          found = true;
+          break;
+        }
       }
-    }
-    if (!found) {
+      if (!found) {
+        selectedPiece = pieces[mouseYIndex][mouseXIndex];
+      }
+    } else {
       selectedPiece = pieces[mouseYIndex][mouseXIndex];
     }
-  } else {
-    selectedPiece = pieces[mouseYIndex][mouseXIndex];
   }
 }

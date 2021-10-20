@@ -242,14 +242,14 @@ class King extends Piece {
     this.name = 'king';
   }
 
-  isInCheck() {
+  isInCheck(posx=this.x, posy=this.y) {
     for (let x = 0; x < 8; x++) {
       for (let y = 0; y < 8; y++) {
         if (pieces[y][x] !== 0) {
           if (pieces[y][x].team === -this.team) {
             let moves = pieces[y][x].getPossibleMoves();
             for (let m of moves) {
-              if (pieces[y][x].x + m[0] === this.x && pieces[y][x].y + m[1] === this.y) {
+              if (pieces[y][x].x + m[0] === posx && pieces[y][x].y + m[1] === posy) {
                 return true;
               }
             }
@@ -261,6 +261,15 @@ class King extends Piece {
   }
 
   getCheckedMoves() {
-    
+    let uncheckedMoves = this.getPossibleMoves();
+    let checkedMoves = [];
+
+    for (let m of uncheckedMoves) {
+      if (!this.isInCheck(this.x + m[0], this.y + m[1])) {
+        checkedMoves.push(m);
+      }
+    }
+
+    return checkedMoves;
   }
 }
