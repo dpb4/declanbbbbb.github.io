@@ -3,12 +3,12 @@ float tanhOff = 0;
 
 boolean paused = false;
 void setup() {
-  size(300, 300);
+  size(600, 600);
   background(0);
   strokeWeight(1);
   
   colorMode(RGB, 1);
-  noiseScale = 25;
+  noiseScale = 200;
   
   drawThing();
 }
@@ -22,7 +22,7 @@ void drawThing() {
       float n1 = noise(i/noiseScale, j/noiseScale);
       float n2 = noise(i/noiseScale/4, j/noiseScale/4);
       //n2 = pow(n1, 2);
-      n2 /= 2;
+      n2 /= 10;
       
       float s = (val * n1) + ((1-val) * n2);
       //stroke(s);
@@ -36,7 +36,7 @@ void drawThing() {
 void draw() {
   if (!paused) {
     drawThing();
-    tanhOff += 0.005;
+    tanhOff += 0.01;
   } if (tanhOff >= 1) {
     tanhOff = 0;
   }
