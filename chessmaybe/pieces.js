@@ -239,27 +239,28 @@ class King extends Piece {
     this.name = 'king';
   }
 
-  checkMove(x, y, move) {
-    //TODO
-    let nx = x + move[0];
-    let ny = y + move[1];
+  // checkMove(x, y, move) {
+  //   //TODO
+  //   let nx = x + move[0];
+  //   let ny = y + move[1];
     
-    if (nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7) {
-      if (!this.isInCheck(nx, ny)) {
-        if (pieces[ny][nx] === 0) {
-          return true;
-        }
-        return pieces[ny][nx].team === -this.team;
-      }
-    }
-    return false;
-  }
+  //   // if (nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7) {
+  //   //   if (!this.isInCheck(nx, ny)) {
+  //   //     if (pieces[ny][nx] === 0) {
+  //   //       return true;
+  //   //     }
+  //   //     return pieces[ny][nx].team === -this.team;
+  //   //   }
+  //   // }
+  //   // return false;
+  // }
 
   isInCheck(posx=this.x, posy=this.y) {
     for (let x = 0; x < 8; x++) {
       for (let y = 0; y < 8; y++) {
         if (pieces[y][x] !== 0) {
           if (pieces[y][x].team === -this.team) {
+            // look at every piece, if its an enemy:
             let moves = pieces[y][x].getPossibleMoves();
             for (let m of moves) {
               if (pieces[y][x].x + m[0] === posx && pieces[y][x].y + m[1] === posy) {
@@ -284,5 +285,17 @@ class King extends Piece {
     }
 
     return checkedMoves;
+  }
+
+  getPossibleMoves() {
+    let possibleMoves = [];
+
+    for (let i = 0; i < this.moves.length; i++) {
+      if (this.checkMove(this.x, this.y, this.moves[i]) && !this.isInCheck(this.x + this.moves[i][0], this.y + this.moves[i][1])) {
+        possibleMoves.push(this.moves[i]);
+      }
+    }
+
+    return possibleMoves;
   }
 }

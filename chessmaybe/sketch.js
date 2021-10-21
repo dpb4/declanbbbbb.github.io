@@ -8,7 +8,7 @@ let startingBoard = [
   ['p','p','p','p','p','p','p','p'],
   ['r','n','b','q', 0 ,'b','n','r']
 ];
-// TODO king cant move into danger 242, en passant, castling, everything else
+// TODO king cant move into danger 242, en passant, castling, consider adding blank class, everything else
 
 // white: -1
 // black: 1
