@@ -17,7 +17,7 @@ module.exports = {
         "curly": ["error", "all"],
         "eqeqeq": ["warn", "always"],
         "no-floating-decimal": ["warn"],
-        "brace-style": ["warn", "stroustrup"],
+        "brace-style": ["warn", "1tbs"],
         "no-var": ["warn"],
         "no-empty": ["warn"],
 
@@ -27,7 +27,7 @@ module.exports = {
 
         // disable rules from base configurations
         "no-console": "off",
-        "no-unused-vars": "off"
+        "no-unused-vars": "off",
         "no-undef": "off",
     },
     "globals": {

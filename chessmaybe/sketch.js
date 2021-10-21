@@ -8,7 +8,7 @@ let startingBoard = [
   ['p','p','p','p','p','p','p','p'],
   ['r','n','b','q', 0 ,'b','n','r']
 ];
-// TODO fix repeating in draw loop (king list), en passant, castling, everything else
+// TODO king cant move into danger 242, en passant, castling, everything else
 
 // white: -1
 // black: 1
@@ -22,7 +22,6 @@ let turn = -1;
 let selectedPiece;
 
 let picking = true;
-let round = 0;
 
 let properSelected = false;
 let sprites = [];
@@ -64,36 +63,19 @@ function setup() {
 }
 
 function draw() {
-  properSelected = selectedPiece !== undefined && selectedPiece.team === turn;
   background(220);
   drawGrid();
   displayPieces();
+
+  properSelected = selectedPiece !== undefined && selectedPiece.team === turn;
   let checked = false;
   
   if (turn === -1) {
-    if (whiteKing.isInCheck()) {
-      selectedPiece = whiteKing;
-      let checkedMoves = whiteKing.getCheckedMoves();
-      if (checkedMoves.length === 0) {
-        console.log("checkmate");
-      }
-      highlightMoves(whiteKing, checkedMoves);
-      
-      checked = true;
-    }
+    checked = checkKing(whiteKing);
   } else {
-    if (blackKing.isInCheck()) {
-      selectedPiece = blackKing;
-      let checkedMoves = blackKing.getCheckedMoves();
-      if (checkedMoves.length === 0) {
-        console.log("checkmate");
-      }
-      highlightMoves(blackKing, checkedMoves);
-
-      checked = true;
-    }
+    checked = checkKing(blackKing);
   }
-
+  
   if (properSelected && !checked) {
     highlightMoves(selectedPiece);
   }
@@ -152,6 +134,22 @@ function displayPieces() {
     }
   }
   pop();
+}
+
+function checkKing(king) {
+  if (king.isInCheck()) {
+    selectedPiece = king;
+
+    let checkedMoves = king.getCheckedMoves();
+
+    if (checkedMoves.length === 0) {
+      console.log("checkmate");
+    }
+
+    highlightMoves(king, checkedMoves);
+    
+    return true;
+  }
 }
 
 function highlightMoves(p, moves=p.getPossibleMoves()) {

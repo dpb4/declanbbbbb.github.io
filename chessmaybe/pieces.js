@@ -11,14 +11,13 @@ class Piece {
     let nx = x + move[0];
     let ny = y + move[1];
     
-    if (!(nx < 0 || nx > 7 || ny < 0 || ny > 7)) {
+    if (nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7) {
       if (pieces[ny][nx] === 0) {
-        return nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7;
+        return true;
       }
+      return pieces[ny][nx].team === -this.team;
     }
-    // TODO: fix lol
-    return nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7 && pieces[ny][nx].team === -this.team;
-    // return nx < 0 || nx > 7 || ny < 0 || ny > 7 || pieces[ny][nx] === 0;
+    return false;
   }
 
   getPossibleMoves() {
@@ -39,7 +38,6 @@ class Piece {
     this.x = x;
     this.y = y;
 
-    round++;
     turn = -turn;
     this.hasMoved = true;
   }
@@ -132,7 +130,6 @@ class Pawn extends Piece {
       this.y = y;
     }
     
-    round++;
     turn = -turn;
     this.hasMoved = true;
   }
@@ -240,6 +237,22 @@ class King extends Piece {
       [-1,  1], [-1, -1]
     ];
     this.name = 'king';
+  }
+
+  checkMove(x, y, move) {
+    //TODO
+    let nx = x + move[0];
+    let ny = y + move[1];
+    
+    if (nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7) {
+      if (!this.isInCheck(nx, ny)) {
+        if (pieces[ny][nx] === 0) {
+          return true;
+        }
+        return pieces[ny][nx].team === -this.team;
+      }
+    }
+    return false;
   }
 
   isInCheck(posx=this.x, posy=this.y) {
