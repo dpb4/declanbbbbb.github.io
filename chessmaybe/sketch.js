@@ -8,7 +8,7 @@ let startingBoard = [
   ['p','p','p','p','p','p','p','p'],
   ['r','n','b','q', 0 ,'b','n','r']
 ];
-// TODO king cant move into danger 242, en passant, castling, consider adding blank class, everything else
+// TODO consider pawn diagonals in king moves, other pieces can save king, en passant, castling, consider adding blank class, everything else
 
 // white: -1
 // black: 1
@@ -25,6 +25,7 @@ let picking = true;
 
 let properSelected = false;
 let sprites = [];
+let theme = 0;
 
 let blackKing;
 let whiteKing;
@@ -156,13 +157,25 @@ function highlightMoves(p, moves=p.getPossibleMoves()) {
   let x = p.x;
   let y = p.y;
 
+  push();
   fill(0, 255, 0, 127);
   rect(x*scx, y*scy, scx, scy);
   fill(255, 255, 0, 127);
 
   for (let move of moves) {
-    rect((x + move[0])*scx, (y+move[1])*scy, scx, scy);
+    fill(255, 255, 0, 127);
+    noStroke();
+    rect((x + move[0])*scx, (y + move[1])*scy, scx, scy);
+
+    strokeWeight(10);
+    stroke(255, 0, 0, 127);
+    line(x*scx + scx/2, y*scy + scy/2, (x + move[0])*scx + scx/2, (y + move[1])*scy + scy/2);
+    
+    strokeWeight(20);
+    stroke(255, 0, 0);
+    point((x + move[0])*scx + scx/2, (y + move[1])*scy + scy/2);
   }
+  pop();
 }
 
 function mouseClicked() {
