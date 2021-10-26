@@ -8,19 +8,24 @@ let seed;
 
 let grid;
 
-let noiseZoom = 20;
+let noiseZoom = 10;
 
 let offsetX = 0;
 let offsetY = 0;
 
-let planeDir;
+let planeDir = 0;
 let planeSpeed;
+let turnRate;
 
 let straight;
 let left;
 let right;
 
 let curSprite;
+
+// remember to use min p5 for this!!!!! very important!!!!!
+
+// things to add: smooth land, altimeter, smoke, landmass generationa
 
 function preload() {
   straight = loadImage("assets/straight.png");
@@ -35,6 +40,7 @@ function setup() {
   seed = random(-10000, 20000);
   cellWidth = width/gridSizeX;
   cellHeight = height/gridSizeY;
+  turnRate = PI/64;
   
   grid = createEmpty2DArray(gridSizeY, gridSizeX, 0);
   createFancyNoiseArray();
@@ -45,25 +51,23 @@ function setup() {
 function draw() {
   checkInput();
   displayGrid();
+  displayPlane();
 }
 
 function checkInput() {
-  if (keyIsDown(UP_ARROW) || keyIsDown(65)) {
-    offsetY -= 1/noiseZoom;
+  curSprite = straight;
+  if (keyIsDown(65)) {
+    curSprite = left;
+    planeDir -= turnRate;
   }
 
-  if (keyIsDown(LEFT_ARROW) || keyIsDown(87)) {
-    offsetX -= 1/noiseZoom;
+  if (keyIsDown(68)) {
+    curSprite = right;
+    planeDir += turnRate;
   }
 
-  if (keyIsDown(DOWN_ARROW) || keyIsDown(68)) {
-    offsetY += 1/noiseZoom;
-  }
-
-  if (keyIsDown(RIGHT_ARROW) || keyIsDown(83)) {
-    offsetX += 1/noiseZoom;
-  }
-
+  offsetX -= cos(planeDir)/(50-noiseZoom)/4;
+  offsetY += sin(planeDir)/(50-noiseZoom)/4;
   createFancyNoiseArray();
 }
 
@@ -80,8 +84,9 @@ function displayPlane() {
   push();
   imageMode(CENTER);
 
+  translate(width/2, height/2);
   rotate(planeDir);
-  image(curSprite, width/2, height/2);
+  image(curSprite, 0, 0);
   pop();
 }
 
@@ -127,6 +132,6 @@ function createFancyNoiseArray() {
 }
 
 function mouseWheel(event) {
-  noiseZoom += event.delta/100;
-  noiseZoom = max(0, noiseZoom);
+  noiseZoom -= event.delta/100;
+  noiseZoom = min(max(10, noiseZoom), 41);
 }
