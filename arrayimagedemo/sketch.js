@@ -25,7 +25,7 @@ let curSprite;
 
 // remember to use min p5 for this!!!!! very important!!!!!
 
-// things to add: smooth land, altimeter, smoke, landmass generationa
+// things to add: smooth land, altimeter, smoke, landmass generation, water trail if close
 
 function preload() {
   straight = loadImage("assets/straight.png");
