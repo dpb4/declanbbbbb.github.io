@@ -4,51 +4,67 @@ let gridSizeX = 100;
 let gridSizeY;
 let cellWidth;
 let cellHeight;
-let grid;
-let nesw = [[0, 1], [1, 0], [0, -1], [-1, 0], [0, 0]];
-let noiseZoom = 20;
 let seed;
+
+let grid;
+
+let noiseZoom = 20;
 
 let offsetX = 0;
 let offsetY = 0;
 
+let planeDir;
+let planeSpeed;
+
+let straight;
+let left;
+let right;
+
+let curSprite;
+
+function preload() {
+  straight = loadImage("assets/straight.png");
+  left = loadImage("assets/bankleft.png");
+  right = loadImage("assets/bankright.png");
+}
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
   gridSizeY = floor(height/(width/gridSizeX)) + 1;
-
+  
   seed = random(-10000, 20000);
   cellWidth = width/gridSizeX;
   cellHeight = height/gridSizeY;
+  
   grid = createEmpty2DArray(gridSizeY, gridSizeX, 0);
-  grid = createFancyNoiseArray(grid);
+  createFancyNoiseArray();
   
   noStroke();
 }
 
 function draw() {
-  // background(220);
-  // loadPixels();
-
-  if (keyIsDown(UP_ARROW)) {
-    offsetY -= 1/noiseZoom;
-    grid = createFancyNoiseArray(grid);
-  }
-
-  if (keyIsDown(LEFT_ARROW)) {
-    offsetX -= 1/noiseZoom;
-    grid = createFancyNoiseArray(gridSizeX, gridSizeY);
-  }
-
-  if (keyIsDown(DOWN_ARROW)) {
-    offsetY += 1/noiseZoom;
-    grid = createFancyNoiseArray(gridSizeX, gridSizeY);
-  }
-
-  if (keyIsDown(RIGHT_ARROW)) {
-    offsetX += 1/noiseZoom;
-    grid = createFancyNoiseArray(gridSizeX, gridSizeY);
-  }
+  checkInput();
   displayGrid();
+}
+
+function checkInput() {
+  if (keyIsDown(UP_ARROW) || keyIsDown(65)) {
+    offsetY -= 1/noiseZoom;
+  }
+
+  if (keyIsDown(LEFT_ARROW) || keyIsDown(87)) {
+    offsetX -= 1/noiseZoom;
+  }
+
+  if (keyIsDown(DOWN_ARROW) || keyIsDown(68)) {
+    offsetY += 1/noiseZoom;
+  }
+
+  if (keyIsDown(RIGHT_ARROW) || keyIsDown(83)) {
+    offsetX += 1/noiseZoom;
+  }
+
+  createFancyNoiseArray();
 }
 
 function displayGrid() {
@@ -58,6 +74,15 @@ function displayGrid() {
       rect(x*cellWidth, y*cellHeight, cellWidth+1, cellHeight+1);
     }
   }
+}
+
+function displayPlane() {
+  push();
+  imageMode(CENTER);
+
+  rotate(planeDir);
+  image(curSprite, width/2, height/2);
+  pop();
 }
 
 function createEmpty2DArray(rows, cols, val) {
@@ -74,8 +99,8 @@ function createEmpty2DArray(rows, cols, val) {
 function floatToColour(x) {
   let water = 0.4;
   let sand = 0.5;
-  let grass = 0.7;
-  let mountain = 0.9;
+  let grass = 0.65;
+  let mountain = 0.8;
 
   if (x < water) {
     return color(28, 120, 186);
@@ -90,38 +115,18 @@ function floatToColour(x) {
   }
 }
 
-function createFancyNoiseArray(array) {
-  let cols = array.length;
-  let rows = array[0].length;
+function createFancyNoiseArray() {
+  let cols = grid.length;
+  let rows = grid[0].length;
 
   for (let y=0; y<rows; y++) {
     for (let x=0; x<cols; x++) {
-      array[y][x] = (noise(x/noiseZoom + offsetX + seed, y/noiseZoom + offsetY + seed));
+      grid[x][y] = noise(x/noiseZoom + offsetX + seed, y/noiseZoom + offsetY + seed);
     }
   }
-
-  return array;
 }
 
-function pixRect() {
-  loadPixels();
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      // let c = floatToColour(grid[floor(y/cellHeight)][floor(x/cellWidth)]);
-      // let i = y*width + x;
-
-      // pixels[i*4] = red(c);
-      // pixels[i*4 + 1] = green(c);
-      // pixels[i*4 + 2] = blue(c);
-
-      let c = floatToColour(grid[floor(y/cellHeight)][floor(x/cellWidth)]);
-      
-      let index = 4 * (y * width + x);
-      pixels[index] = 0;
-      pixels[index+1] = 255;
-      pixels[index+2] = 255;
-
-    }
-  }
-  updatePixels();
+function mouseWheel(event) {
+  noiseZoom += event.delta/100;
+  noiseZoom = max(0, noiseZoom);
 }
