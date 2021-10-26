@@ -1,47 +1,61 @@
 // Grid Demo
 
 let gridSizeX = 100;
-let grisSizeY;
+let gridSizeY;
+let cellWidth;
+let cellHeight;
 let grid;
 let nesw = [[0, 1], [1, 0], [0, -1], [-1, 0], [0, 0]];
 let noiseZoom = 20;
+let seed;
 
-let octaves = 1;
-let frequency = 2;
-let amplitude = 0; // used for octave layering
-
+let offsetX = 0;
 let offsetY = 0;
-
-let expCo = 10;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   gridSizeY = floor(height/(width/gridSizeX)) + 1;
-  grid = createFancyNoiseArray(gridSizeX, gridSizeY);
+
+  seed = random(-10000, 20000);
+  cellWidth = width/gridSizeX;
+  cellHeight = height/gridSizeY;
+  grid = createEmpty2DArray(gridSizeY, gridSizeX, 0);
+  grid = createFancyNoiseArray(grid);
   
   noStroke();
 }
 
 function draw() {
-  background(220);
-  displayGrid();
+  // background(220);
+  // loadPixels();
 
   if (keyIsDown(UP_ARROW)) {
-    offsetY += height/gridSizeX/noiseZoom;
-    grid = createFancyNoiseArray(gridSizeX, gridSizeX);
-    console.log("moving");
+    offsetY -= 1/noiseZoom;
+    grid = createFancyNoiseArray(grid);
   }
+
+  if (keyIsDown(LEFT_ARROW)) {
+    offsetX -= 1/noiseZoom;
+    grid = createFancyNoiseArray(gridSizeX, gridSizeY);
+  }
+
+  if (keyIsDown(DOWN_ARROW)) {
+    offsetY += 1/noiseZoom;
+    grid = createFancyNoiseArray(gridSizeX, gridSizeY);
+  }
+
+  if (keyIsDown(RIGHT_ARROW)) {
+    offsetX += 1/noiseZoom;
+    grid = createFancyNoiseArray(gridSizeX, gridSizeY);
+  }
+  displayGrid();
 }
 
 function displayGrid() {
-  let cellWidth = width/gridSizeX;
-  let cellHeight = width/gridSizeX;
-
   for (let y=0; y<gridSizeY; y++) {
     for (let x=0; x<gridSizeX; x++) {
-      noStroke();
       fill(floatToColour(grid[y][x]));
-      rect(x*cellWidth, y*cellHeight, cellWidth, cellHeight);
+      rect(x*cellWidth, y*cellHeight, cellWidth+1, cellHeight+1);
     }
   }
 }
@@ -52,17 +66,6 @@ function createEmpty2DArray(rows, cols, val) {
     grid.push([]);
     for (let x=0; x<cols; x++) {
       grid[y].push(val);
-    }
-  }
-  return grid;
-}
-
-function createRandom2DArray(rows, cols) {
-  let grid = [];
-  for (let y=0; y<rows; y++) {
-    grid.push([]);
-    for (let x=0; x<cols; x++) {
-      grid[y].push(fancyNoise(x, y));
     }
   }
   return grid;
@@ -87,38 +90,38 @@ function floatToColour(x) {
   }
 }
 
-function createFancyNoiseArray(cols, rows) {
-  let grid = [];
-  let aMin = 9999999;
-  let aMax = -9999999;
-
-  for (let y=0; y<rows; y++) {
-    grid.push([]);
-    for (let x=0; x<cols; x++) {
-
-      let cellVal = 0;
-      for (let i = 0; i < octaves; i++) {
-        cellVal += noise(x/noiseZoom * pow(frequency, i), y/noiseZoom * pow(frequency, i) + offsetY) * pow(amplitude, i);
-      }
-
-      grid[y].push(cellVal);
-      aMin = min(aMin, cellVal);
-      aMax = max(aMax, cellVal);
-    }
-  }
+function createFancyNoiseArray(array) {
+  let cols = array.length;
+  let rows = array[0].length;
 
   for (let y=0; y<rows; y++) {
     for (let x=0; x<cols; x++) {
-      grid[y][x] = map(grid[y][x], aMin, aMax, 0, 1);
+      array[y][x] = (noise(x/noiseZoom + offsetX + seed, y/noiseZoom + offsetY + seed));
     }
   }
-  return grid;
+
+  return array;
 }
-function fancyNoise(x, y) {
-  let out = 0;
-  for (let i = 0; i < octaves; i++) {
-    out += noise(x/noiseZoom * pow(frequency, i), y/noiseZoom * pow(frequency, i)) * exp(expCo * (pow(amplitude, i)-1));
+
+function pixRect() {
+  loadPixels();
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      // let c = floatToColour(grid[floor(y/cellHeight)][floor(x/cellWidth)]);
+      // let i = y*width + x;
+
+      // pixels[i*4] = red(c);
+      // pixels[i*4 + 1] = green(c);
+      // pixels[i*4 + 2] = blue(c);
+
+      let c = floatToColour(grid[floor(y/cellHeight)][floor(x/cellWidth)]);
+      
+      let index = 4 * (y * width + x);
+      pixels[index] = 0;
+      pixels[index+1] = 255;
+      pixels[index+2] = 255;
+
+    }
   }
-  return min(max(out, 0), 1);
-  //return out;
+  updatePixels();
 }

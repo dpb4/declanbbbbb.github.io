@@ -151,7 +151,6 @@ class Pawn extends Piece {
   }
 
   checkFlank(x, y, move) {
-    // overloaded to include that pawns can not take from in front of them
     let nx = x + move[0];
     let ny = y + move[1];
     
