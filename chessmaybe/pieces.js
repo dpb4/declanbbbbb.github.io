@@ -42,6 +42,17 @@ class Piece {
     this.hasMoved = true;
   }
 
+  canTakeSquare(x, y) {
+    let moves = this.getPossibleMoves();
+
+    for (let m of moves) {
+      if (this.x + m[0] === x && this.y + m[1] === y) {
+        return m;
+      }
+    }
+    
+  }
+
   display() {
     push();
 
@@ -243,6 +254,9 @@ class King extends Piece {
       [-1,  1], [-1, -1]
     ];
     this.name = 'king';
+
+    this.threatX;
+    this.threatY;
   }
 
   checkMove(x, y, move) {
@@ -261,11 +275,11 @@ class King extends Piece {
     return false;
   }
 
-  isInCheck(posx=this.x, posy=this.y) {
+  isInCheck(posx=this.x, posy=this.y, board=pieces) {
     for (let x = 0; x < 8; x++) {
       for (let y = 0; y < 8; y++) {
 
-        let curPiece = pieces[y][x];
+        let curPiece = board[y][x];
 
         if (curPiece !== 0) {
           // look at every piece, if its an enemy:
@@ -278,10 +292,13 @@ class King extends Piece {
               for (let m of moves) {
 
                 if (curPiece.x + m[0] === posx && curPiece.y + m[1] === posy) {
+                  this.threatX = curPiece.x;
+                  this.threatY = curPiece.y;
                   return true;
                 }
               }
             } else {
+              // TODO this should never actually happen
               // if you check the moves like normal, it will turn into a stack overflow error
               // instead, just check distance
               if (dist(posx, posy, curPiece.x, curPiece.y) < 1.5) {

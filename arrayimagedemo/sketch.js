@@ -42,7 +42,7 @@ function setup() {
   cellHeight = height/gridSizeY;
   turnRate = PI/64;
   
-  grid = createEmpty2DArray(gridSizeY, gridSizeX, 0);
+  grid = createEmpty2DArray(gridSizeY + 1, gridSizeX + 1, 0);
   createFancyNoiseArray();
   
   noStroke();
@@ -75,7 +75,7 @@ function displayGrid() {
   for (let y=0; y<gridSizeY; y++) {
     for (let x=0; x<gridSizeX; x++) {
       fill(floatToColour(grid[y][x]));
-      rect(x*cellWidth, y*cellHeight, cellWidth+1, cellHeight+1);
+      rect(x*cellWidth - cellWidth + offsetY * noiseZoom % cellWidth, y*cellHeight - cellWidth + offsetX * noiseZoom % cellHeight, cellWidth+1, cellHeight+1);
     }
   }
 }

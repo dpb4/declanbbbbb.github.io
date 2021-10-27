@@ -79,6 +79,13 @@ function draw() {
   
   if (properSelected && !checked) {
     highlightMoves(selectedPiece);
+  } else if (properSelected) {
+    if (turn === -1) {
+      highlightMoves(selectedPiece, selectedPiece.canTakeSquare(whiteKing.threatX, whiteKing.threatY));
+    } else {
+      highlightMoves(selectedPiece, selectedPiece.canTakeSquare(blackKing.threatY, blackKing.threatY));
+    }
+    
   }
 }
 
@@ -138,8 +145,10 @@ function displayPieces() {
 }
 
 function checkKing(king) {
+  // TODO consider moving to king class
   if (king.isInCheck()) {
-    selectedPiece = king;
+    let options = [];
+    // selectedPiece = king;
 
     let checkedMoves = king.getCheckedMoves();
 
@@ -147,7 +156,20 @@ function checkKing(king) {
       console.log("checkmate");
     }
 
-    highlightMoves(king, checkedMoves);
+    // highlightMoves(king, checkedMoves);
+    
+    for (let x = 0; x < 8; x++) {
+      for (let y = 0; y < 8; y++) {
+        if (pieces[y][x] !== 0) {
+          if (pieces[y][x].team === king.team && pieces[y][x] !== king) {
+            let moves = pieces[y][x].canTakeSquare(king.threatX, king.threatY);
+            if (moves.length !== 0) {
+              
+            }
+          }
+        }
+      }
+    }
     
     return true;
   }
@@ -160,13 +182,8 @@ function highlightMoves(p, moves=p.getPossibleMoves()) {
   push();
   fill(0, 255, 0, 127);
   rect(x*scx, y*scy, scx, scy);
-  fill(255, 255, 0, 127);
 
   for (let move of moves) {
-    fill(255, 255, 0, 127);
-    noStroke();
-    rect((x + move[0])*scx, (y + move[1])*scy, scx, scy);
-
     strokeWeight(10);
     stroke(255, 0, 0, 127);
     line(x*scx + scx/2, y*scy + scy/2, (x + move[0])*scx + scx/2, (y + move[1])*scy + scy/2);
