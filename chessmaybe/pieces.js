@@ -73,6 +73,27 @@ class Piece {
     }
     return sprites[1][this.code][theme];
   }
+
+  getPossibleBoards() {
+    let moves = this.getPossibleMoves();
+    let boards = [];
+
+    for (let m of moves) {
+      let newBoard = new Array(8).fill(0).map(x => new Array(8));
+      
+      for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 8; x++) {
+          newBoard[y][x] = pieces[y][x];
+        }
+      }
+
+      newBoard[this.y][this.x] = 0;
+      newBoard[this.y + m[1]][this.x + m[0]] = this;
+      boards.push(newBoard);
+    }
+
+    return boards;
+  }
 }
 
 class FreePiece extends Piece {
@@ -298,7 +319,7 @@ class King extends Piece {
                 }
               }
             } else {
-              // TODO this should never actually happen
+              // TODO this should never actually happen since kings can't check
               // if you check the moves like normal, it will turn into a stack overflow error
               // instead, just check distance
               if (dist(posx, posy, curPiece.x, curPiece.y) < 1.5) {
@@ -313,6 +334,7 @@ class King extends Piece {
   }
 
   getCheckedMoves() {
+    // TODO this may become redundant
     let uncheckedMoves = this.getPossibleMoves();
     let checkedMoves = [];
 
@@ -323,6 +345,23 @@ class King extends Piece {
     }
 
     return checkedMoves;
+  }
+
+  getAllCheckedMoves() {
+    let moves = [];
+    for (let y = 0; y < 8; y++) {
+      for (let x = 0; x < 8; x++) {
+        // if its a teammate:
+        if (pieces[y][x].team === this.team && pieces[y][x] !== this) {
+          let possibleBoards = pieces[y][x].getPossibleBoards();
+          moves.push([x, y]);
+
+          for (let board of possibleBoards) {
+            // TODO you were here
+          }
+        }
+      }
+    }
   }
 
   getPossibleMoves() {

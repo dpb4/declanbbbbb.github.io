@@ -164,7 +164,7 @@ function checkKing(king) {
           if (pieces[y][x].team === king.team && pieces[y][x] !== king) {
             let moves = pieces[y][x].canTakeSquare(king.threatX, king.threatY);
             if (moves.length !== 0) {
-              
+              // do something
             }
           }
         }
