@@ -8,7 +8,7 @@ let startingBoard = [
   ['p','p','p','p','p','p','p','p'],
   ['r','n','b','q', 0 ,'b','n','r']
 ];
-// TODO consider pawn diagonals in king moves, other pieces can save king, en passant, castling, consider adding blank class, everything else
+// TODO consider pawn diagonals in king moves, pieces cannot leave king in danger, other pieces can save king, en passant, castling, consider adding blank class, everything else
 
 // white: -1
 // black: 1
@@ -23,7 +23,8 @@ let selectedPiece;
 
 let picking = true;
 
-let properSelected = false;
+let selectedIsProper = false;
+let checked = false;
 let sprites = [];
 let theme = 0;
 
@@ -68,24 +69,21 @@ function draw() {
   drawGrid();
   displayPieces();
 
-  properSelected = selectedPiece !== undefined && selectedPiece.team === turn;
-  let checked = false;
+  selectedIsProper = selectedPiece !== undefined && selectedPiece.team === turn;
+  checked = false;
   
   if (turn === -1) {
-    checked = checkKing(whiteKing);
+    // checked = checkKing(whiteKing);
+    checked = whiteKing.isInCheck();
   } else {
-    checked = checkKing(blackKing);
+    // checked = checkKing(blackKing);
+    checked = blackKing.isInCheck();
   }
   
-  if (properSelected && !checked) {
+  if (selectedIsProper && !checked) {
     highlightMoves(selectedPiece);
-  } else if (properSelected) {
-    if (turn === -1) {
-      highlightMoves(selectedPiece, selectedPiece.canTakeSquare(whiteKing.threatX, whiteKing.threatY));
-    } else {
-      highlightMoves(selectedPiece, selectedPiece.canTakeSquare(blackKing.threatY, blackKing.threatY));
-    }
-    
+  } else if (selectedIsProper) {
+    highlightMoves(selectedPiece, selectedPiece.getMovesInCheck());
   }
 }
 
@@ -104,6 +102,7 @@ function initBoard() {
       }
     }
   }
+  
   blackKing = new King(4, 0, 1);
   whiteKing = new King(4, 7, -1);
   pieces[0][4] = blackKing;
@@ -144,36 +143,36 @@ function displayPieces() {
   pop();
 }
 
-function checkKing(king) {
-  // TODO consider moving to king class
-  if (king.isInCheck()) {
-    let options = [];
-    // selectedPiece = king;
+// function checkKing(king) {
+//   // TODO consider moving to king class
+//   if (king.isInCheck()) {
+//     let options = [];
+//     // selectedPiece = king;
 
-    let checkedMoves = king.getCheckedMoves();
+//     let checkedMoves = king.getCheckedMoves();
 
-    if (checkedMoves.length === 0) {
-      console.log("checkmate");
-    }
+//     if (checkedMoves.length === 0) {
+//       console.log("checkmate");
+//     }
 
-    // highlightMoves(king, checkedMoves);
+//     // highlightMoves(king, checkedMoves);
     
-    for (let x = 0; x < 8; x++) {
-      for (let y = 0; y < 8; y++) {
-        if (pieces[y][x] !== 0) {
-          if (pieces[y][x].team === king.team && pieces[y][x] !== king) {
-            let moves = pieces[y][x].canTakeSquare(king.threatX, king.threatY);
-            if (moves.length !== 0) {
-              // do something
-            }
-          }
-        }
-      }
-    }
+//     for (let x = 0; x < 8; x++) {
+//       for (let y = 0; y < 8; y++) {
+//         if (pieces[y][x] !== 0) {
+//           if (pieces[y][x].team === king.team && pieces[y][x] !== king) {
+//             let moves = pieces[y][x].canTakeSquare(king.threatX, king.threatY);
+//             if (moves.length !== 0) {
+//               // do something
+//             }
+//           }
+//         }
+//       }
+//     }
     
-    return true;
-  }
-}
+//     return true;
+//   }
+// }
 
 function highlightMoves(p, moves=p.getPossibleMoves()) {
   let x = p.x;
@@ -200,9 +199,14 @@ function mouseClicked() {
   let mouseYIndex = floor(mouseY/scy);
   
   if (mouseX < width && mouseY < height) {
-    if (properSelected) {
+    if (selectedIsProper) {
       let found = false;
-      let moves = selectedPiece.getPossibleMoves();
+      let moves;
+      if (!checked) {
+        moves = selectedPiece.getPossibleMoves();
+      } else {
+        moves = selectedPiece.getMovesInCheck();
+      }
   
       for (let move of moves) {
         if (move[0] + selectedPiece.x === mouseXIndex && move[1] + selectedPiece.y === mouseYIndex) {
