@@ -54,24 +54,25 @@ class Piece {
   }
 
   display() {
-    push();
+    // push();
 
-    stroke(255, 0, 0);
-    fill((1 - (this.team/2 + 0.5)) * 255);
-    circle(this.x*scx + scx/2, this.y*scy + scy/2, 50);
+    // stroke(255, 0, 0);
+    // fill((1 - (this.team/2 + 0.5)) * 255);
+    // circle(this.x*scx + scx/2, this.y*scy + scy/2, 50);
 
-    stroke(255);
-    textAlign(CENTER, CENTER);
-    fill(0);
-    text(this.name, this.x*scx + scx/2, this.y*scy + scy/2);
-    pop();
+    // stroke(255);
+    // textAlign(CENTER, CENTER);
+    // fill(0);
+    // text(this.name, this.x*scx + scx/2, this.y*scy + scy/2);
+    // pop();
+    image(this.getSprite(), this.x*scx, this.y*scy);
   }
 
   getSprite() {
-    if (team === -1) {
-      return sprites[0][this.code][theme];
+    if (this.team === -1) {
+      return sprites[0][codes[this.code]][theme];
     }
-    return sprites[1][this.code][theme];
+    return sprites[1][codes[this.code]][theme];
   }
 
   getPossibleBoards() {

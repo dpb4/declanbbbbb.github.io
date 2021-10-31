@@ -8,7 +8,7 @@ let startingBoard = [
   ['p','p','p','p','p','p','p','p'],
   ['r','n','b','q', 0 ,'b','n','r']
 ];
-// TODO consider pawn diagonals in king moves, pieces cannot leave king in danger, other pieces can save king, en passant, castling, consider adding blank class, everything else
+// TODO consider pawn diagonals in king moves, pieces cannot leave king in danger, en passant, castling, consider adding blank class, everything else
 
 // white: -1
 // black: 1
@@ -18,6 +18,8 @@ let scx;
 let scy;
 
 let types;
+let codes;
+
 let turn = -1;
 let selectedPiece;
 
@@ -34,20 +36,20 @@ function preload() {
   // layout: sprites[team][piece][theme]
   sprites = [
     [
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
+      [loadImage("./assets/pixel/wpawn.png")],
+      [loadImage("./assets/pixel/wknight.png")],
+      [loadImage("./assets/pixel/wbishop.png")],
+      [loadImage("./assets/pixel/wrook.png")],
+      [loadImage("./assets/pixel/wqueen.png")],
+      [loadImage("./assets/pixel/wking.png")],
     ],
     [
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
+      [loadImage("./assets/pixel/bpawn.png")],
+      [loadImage("./assets/pixel/bknight.png")],
+      [loadImage("./assets/pixel/bbishop.png")],
+      [loadImage("./assets/pixel/brook.png")],
+      [loadImage("./assets/pixel/bqueen.png")],
+      [loadImage("./assets/pixel/bking.png")],
     ]
   ];
 }
@@ -57,6 +59,7 @@ function setup() {
   noStroke();
 
   types = {'p': Pawn, 'n': Knight, 'b': Bishop, 'r': Rook, 'k': King, 'q': Queen};
+  codes = {'p': 0, 'n': 1, 'b': 2, 'r': 3, 'k': 4, 'q': 5};
 
   scx = width/8;
   scy = height/8;
@@ -102,7 +105,7 @@ function initBoard() {
       }
     }
   }
-  
+
   blackKing = new King(4, 0, 1);
   whiteKing = new King(4, 7, -1);
   pieces[0][4] = blackKing;
