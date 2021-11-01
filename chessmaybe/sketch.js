@@ -58,8 +58,8 @@ function setup() {
   createCanvas(600, 600);
   noStroke();
 
-  types = {'p': Pawn, 'n': Knight, 'b': Bishop, 'r': Rook, 'k': King, 'q': Queen};
-  codes = {'p': 0, 'n': 1, 'b': 2, 'r': 3, 'k': 4, 'q': 5};
+  types = {'p': Pawn, 'n': Knight, 'b': Bishop, 'r': Rook, 'q': Queen, 'k': King};
+  codes = {'p': 0, 'n': 1, 'b': 2, 'r': 3, 'q': 4, 'k': 5};
 
   scx = width/8;
   scy = height/8;
