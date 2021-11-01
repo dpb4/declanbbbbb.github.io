@@ -385,36 +385,20 @@ class King extends Piece {
     return false;
   }
 
-  // getCheckedMoves() {
-  //   // TODO this may become redundant
-  //   let uncheckedMoves = this.getPossibleMoves();
-  //   let checkedMoves = [];
+  getMovesInCheck() {
+    // if you dont override the function it will turn into a stack error
+    //TODO kings are broken around pawns
+    let uncheckedMoves = this.getPossibleMoves();
+    let checkedMoves = [];
 
-  //   for (let m of uncheckedMoves) {
-  //     if (!this.isInCheck(this.x + m[0], this.y + m[1])) {
-  //       checkedMoves.push(m);
-  //     }
-  //   }
+    for (let m of uncheckedMoves) {
+      if (!this.isInCheck(this.x + m[0], this.y + m[1])) {
+        checkedMoves.push(m);
+      }
+    }
 
-  //   return checkedMoves;
-  // }
-
-  // getAllCheckedMoves() {
-  //   let moves = [];
-  //   for (let y = 0; y < 8; y++) {
-  //     for (let x = 0; x < 8; x++) {
-  //       // if its a teammate:
-  //       if (pieces[y][x].team === this.team && pieces[y][x] !== this) {
-  //         let possibleBoards = pieces[y][x].getPossibleBoards();
-  //         moves.push([x, y]);
-
-  //         for (let board of possibleBoards) {
-  //           // TODO you were here
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
+    return checkedMoves;
+  }
 
   getPossibleMoves() {
     let possibleMoves = [];

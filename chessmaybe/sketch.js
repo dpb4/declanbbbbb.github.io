@@ -8,7 +8,7 @@ let startingBoard = [
   ['p','p','p','p','p','p','p','p'],
   ['r','n','b','q', 0 ,'b','n','r']
 ];
-// TODO consider pawn diagonals in king moves, pieces cannot leave king in danger, en passant, castling, consider adding blank class, everything else
+// TODO consider pawn diagonals in king moves, en passant, castling, consider adding blank class, stalemate rule, king list, everything else
 
 // white: -1
 // black: 1
@@ -75,19 +75,27 @@ function draw() {
   selectedIsProper = selectedPiece !== undefined && selectedPiece.team === turn;
   checked = false;
   
-  if (turn === -1) {
-    // checked = checkKing(whiteKing);
-    checked = whiteKing.isInCheck();
-  } else {
-    // checked = checkKing(blackKing);
-    checked = blackKing.isInCheck();
-  }
+  drawCheck();
   
-  if (selectedIsProper && !checked) {
-    highlightMoves(selectedPiece);
-  } else if (selectedIsProper) {
+  if (selectedIsProper) {
     highlightMoves(selectedPiece, selectedPiece.getMovesInCheck());
   }
+}
+
+function drawCheck() {
+  push();
+  fill(255, 255, 0, 127);
+  noStroke();
+  if (turn === -1) {
+    if (whiteKing.isInCheck()) {
+      rect(whiteKing.x * scx, whiteKing.y * scy, scx, scy);
+    }
+  } else {
+    if (blackKing.isInCheck()) {
+      rect(blackKing.x * scx, blackKing.y * scy, scx, scy);
+    }
+  }
+  pop();
 }
 
 function initBoard() {
