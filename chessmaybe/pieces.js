@@ -12,10 +12,10 @@ class Piece {
     let ny = y + move[1];
     
     if (nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7) {
-      if (pieces[ny][nx] === 0) {
+      if (board[ny][nx] === 0) {
         return true;
       }
-      return pieces[ny][nx].team === -this.team;
+      return board[ny][nx].team === -this.team;
     }
     return false;
   }
@@ -54,17 +54,6 @@ class Piece {
   }
 
   display() {
-    // push();
-
-    // stroke(255, 0, 0);
-    // fill((1 - (this.team/2 + 0.5)) * 255);
-    // circle(this.x*scx + scx/2, this.y*scy + scy/2, 50);
-
-    // stroke(255);
-    // textAlign(CENTER, CENTER);
-    // fill(0);
-    // text(this.name, this.x*scx + scx/2, this.y*scy + scy/2);
-    // pop();
     image(this.getSprite(), this.x*scx, this.y*scy);
   }
 
@@ -318,9 +307,6 @@ class King extends Piece {
     ];
     this.name = 'king';
     this.code = 'k';
-
-    this.threatX;
-    this.threatY;
   }
 
   checkMove(x, y, move) {
@@ -366,10 +352,8 @@ class King extends Piece {
                   }
                 }
               } else {
-                //TODO pawns not working
                 for (let i = 0; i < 2; i++) {
-                  if(curPiece.checkFlank(curPiece.x, curPiece.y, curPiece.moves[i])) {
-                    //TODO this is if the pawn can take ANY piece not just the king
+                  if (curPiece.x + curPiece.moves[i][0] === this.x && curPiece.y + curPiece.moves[i][1] === this.y) {
                     return true;
                   }
                 }
@@ -384,7 +368,7 @@ class King extends Piece {
 
   getMovesInCheck() {
     // if you dont override the function it will turn into a stack error
-    //TODO kings are broken around pawns
+    //TODO kings are broken around pawns STILL
     let uncheckedMoves = this.getPossibleMoves();
     let checkedMoves = [];
 
@@ -394,7 +378,7 @@ class King extends Piece {
       }
     }
 
-    return checkedMoves;
+    return uncheckedMoves;
   }
 
   getPossibleMoves() {
