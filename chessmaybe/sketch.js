@@ -8,7 +8,7 @@ let startingBoard = [
   ['p','p','p','p','p','p','p','p'],
   ['r','n','b','q', 0 ,'b','n','r']
 ];
-// TODO consider pawn diagonals in king moves, actual checkmate, en passant, castling, consider adding blank class, stalemate rule, king list, everything else
+// TODO consider pawn diagonals in king moves, en passant, castling, consider adding blank class, stalemate rule, king list, everything else
 
 // white: -1
 // black: 1
