@@ -36,20 +36,20 @@ function preload() {
   // layout: sprites[team][piece][theme]
   sprites = [
     [
-      [loadImage("./assets/pixel/wpawn.png")],
+      [loadImage("./assets/pixel/wpawn.png")  ],
       [loadImage("./assets/pixel/wknight.png")],
       [loadImage("./assets/pixel/wbishop.png")],
-      [loadImage("./assets/pixel/wrook.png")],
-      [loadImage("./assets/pixel/wqueen.png")],
-      [loadImage("./assets/pixel/wking.png")],
+      [loadImage("./assets/pixel/wrook.png")  ],
+      [loadImage("./assets/pixel/wqueen.png") ],
+      [loadImage("./assets/pixel/wking.png")  ],
     ],
     [
-      [loadImage("./assets/pixel/bpawn.png")],
+      [loadImage("./assets/pixel/bpawn.png")  ],
       [loadImage("./assets/pixel/bknight.png")],
       [loadImage("./assets/pixel/bbishop.png")],
-      [loadImage("./assets/pixel/brook.png")],
-      [loadImage("./assets/pixel/bqueen.png")],
-      [loadImage("./assets/pixel/bking.png")],
+      [loadImage("./assets/pixel/brook.png")  ],
+      [loadImage("./assets/pixel/bqueen.png") ],
+      [loadImage("./assets/pixel/bking.png")  ],
     ]
   ];
 }

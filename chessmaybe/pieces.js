@@ -119,15 +119,11 @@ class Piece {
       // newBoard[this.y + m[1]][this.x + m[0]].hasMoved = true;
 
       if (this.team === -1) {
-        console.log("white");
         if (!whiteKing.isInCheck(whiteKing.x, whiteKing.y, newBoard)) {
           allowedMoves.push(m); // TODO add moves, not boards
         }
       } else {
-        console.log("black");
-        console.log(newBoard);
         if (!blackKing.isInCheck(blackKing.x, blackKing.y, newBoard)) {
-          console.log("pushed");
           allowedMoves.push(m);
         }
       }
@@ -362,20 +358,21 @@ class King extends Piece {
             if (curPiece !== whiteKing && curPiece !== blackKing) {
 
               let moves = curPiece.getPossibleMoves(board);
-              for (let m of moves) {
-
-                if (x + m[0] === posx && y + m[1] === posy) {
-                  // this.threatX = curPiece.x;
-                  // this.threatY = curPiece.y;
-                  return true;
+              if (curPiece.code !== 'p') {
+                for (let m of moves) {
+  
+                  if (x + m[0] === posx && y + m[1] === posy) {
+                    return true;
+                  }
                 }
-              }
-            } else {
-              // TODO this should never actually happen since kings can't check
-              // if you check the moves like normal, it will turn into a stack overflow error
-              // instead, just check distance
-              if (dist(posx, posy, curPiece.x, curPiece.y) < 1.5) {
-                return true;
+              } else {
+                //TODO pawns not working
+                for (let i = 0; i < 2; i++) {
+                  if(curPiece.checkFlank(curPiece.x, curPiece.y, curPiece.moves[i])) {
+                    //TODO this is if the pawn can take ANY piece not just the king
+                    return true;
+                  }
+                }
               }
             }
           }
