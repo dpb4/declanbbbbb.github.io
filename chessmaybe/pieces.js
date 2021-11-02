@@ -315,12 +315,12 @@ class King extends Piece {
     let ny = y + move[1];
     
     if (nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7) {
-      if (!this.isInCheck(nx, ny)) {
-        if (pieces[ny][nx] === 0) {
-          return true;
-        }
-        return pieces[ny][nx].team === -this.team;  
+      if (pieces[ny][nx] === 0) {
+        return true;
       }
+      return pieces[ny][nx].team === -this.team;  
+      // if (!this.isInCheck(nx, ny)) {
+      // }
     }
     return false;
   }
@@ -370,11 +370,13 @@ class King extends Piece {
     // if you dont override the function it will turn into a stack error
     //TODO kings are broken around pawns STILL
     let uncheckedMoves = this.getPossibleMoves();
+    let boards = this.getPossibleBoards();
     let checkedMoves = [];
 
-    for (let m of uncheckedMoves) {
-      if (!this.isInCheck(this.x + m[0], this.y + m[1])) {
-        checkedMoves.push(m);
+    for (let i = 0; i < uncheckedMoves.length; i++) {
+
+      if (!this.isInCheck(this.x + uncheckedMoves[i][0], this.y + uncheckedMoves[i][1], boards[i])) {
+        checkedMoves.push(uncheckedMoves[i]);
       }
     }
 
@@ -385,7 +387,7 @@ class King extends Piece {
     let possibleMoves = [];
 
     for (let i = 0; i < this.moves.length; i++) {
-      if (this.checkMove(this.x, this.y, this.moves[i]) && !this.isInCheck(this.x + this.moves[i][0], this.y + this.moves[i][1])) {
+      if (this.checkMove(this.x, this.y, this.moves[i])) {
         possibleMoves.push(this.moves[i]);
       }
     }
