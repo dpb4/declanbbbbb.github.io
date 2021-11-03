@@ -12,10 +12,10 @@ class Piece {
     let ny = y + move[1];
     
     if (nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7) {
-      if (pieces[ny][nx] === 0) {
+      if (board[ny][nx] === 0) {
         return true;
       }
-      return pieces[ny][nx].team === -this.team;
+      return board[ny][nx].team === -this.team;
     }
     return false;
   }
@@ -43,6 +43,7 @@ class Piece {
   }
 
   canTakeSquare(x, y) {
+    // TODO may be redundant
     let moves = this.getPossibleMoves();
 
     for (let m of moves) {
@@ -233,6 +234,24 @@ class Pawn extends Piece {
     // return nx < 0 || nx > 7 || ny < 0 || ny > 7 || pieces[ny][nx] === 0;
   }
 
+  isFlankingKing(board) {
+
+    for (let i = 0; i < 2; i++) {
+      let nx = this.x + this.moves[i][0];
+      let ny = this.y + this.moves[i][1];
+      if (this.checkFlank(this.x, this.y, this.moves[i])) {
+        if (board[ny][nx] !== 0) {
+
+          if (board[ny][nx].instanceof(King) && board[ny][nx].team === -this.team) {
+            return true;
+          }
+          
+        }
+      }
+    }
+    return false;
+  }
+
   getPossibleMoves() {
     // TODO check for enemies and en passant
     let possibleMoves = [];
@@ -367,8 +386,13 @@ class King extends Piece {
                 }
               } else {
                 //TODO pawns not working
-                // for (let i = 0; i < 2; i++) {
-                //   if(curPiece.checkFlank(curPiece.x, curPiece.y, curPiece.moves[i])) {
+
+                if (curPiece.isFlankingKing(board)) {
+                  return true;
+                }
+                // let flanks = curPiece.getFlankMoves();
+                // for (let f of flanks) {
+                //   if(curPiece.checkFlank(curPiece.x, curPiece.y, f)) {
                 //     //TODO this is if the pawn can take ANY piece not just the king
                 //     return true;
                 //   }

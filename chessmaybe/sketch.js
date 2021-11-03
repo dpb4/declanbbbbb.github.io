@@ -154,38 +154,7 @@ function displayPieces() {
   pop();
 }
 
-// function checkKing(king) {
-//   // TODO consider moving to king class
-//   if (king.isInCheck()) {
-//     let options = [];
-//     // selectedPiece = king;
-
-//     let checkedMoves = king.getCheckedMoves();
-
-//     if (checkedMoves.length === 0) {
-//       console.log("checkmate");
-//     }
-
-//     // highlightMoves(king, checkedMoves);
-    
-//     for (let x = 0; x < 8; x++) {
-//       for (let y = 0; y < 8; y++) {
-//         if (pieces[y][x] !== 0) {
-//           if (pieces[y][x].team === king.team && pieces[y][x] !== king) {
-//             let moves = pieces[y][x].canTakeSquare(king.threatX, king.threatY);
-//             if (moves.length !== 0) {
-//               // do something
-//             }
-//           }
-//         }
-//       }
-//     }
-    
-//     return true;
-//   }
-// }
-
-function highlightMoves(p, moves=p.getPossibleMoves()) {
+function highlightMoves(p, moves=p.getMovesInCheck()) {
   let x = p.x;
   let y = p.y;
 
@@ -212,12 +181,7 @@ function mouseClicked() {
   if (mouseX < width && mouseY < height) {
     if (selectedIsProper) {
       let found = false;
-      let moves;
-      if (!checked) {
-        moves = selectedPiece.getPossibleMoves();
-      } else {
-        moves = selectedPiece.getMovesInCheck();
-      }
+      let moves = selectedPiece.getMovesInCheck();
   
       for (let move of moves) {
         if (move[0] + selectedPiece.x === mouseXIndex && move[1] + selectedPiece.y === mouseYIndex) {
