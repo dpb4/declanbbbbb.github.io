@@ -55,18 +55,7 @@ class Piece {
   }
 
   display() {
-    // push();
-
-    // stroke(255, 0, 0);
-    // fill((1 - (this.team/2 + 0.5)) * 255);
-    // circle(this.x*scx + scx/2, this.y*scy + scy/2, 50);
-
-    // stroke(255);
-    // textAlign(CENTER, CENTER);
-    // fill(0);
-    // text(this.name, this.x*scx + scx/2, this.y*scy + scy/2);
-    // pop();
-    image(this.getSprite(), this.x*scx + 5, this.y*scy + 5);
+    image(this.getSprite(), this.x*scx + offset, this.y*scy + offset);
   }
 
   getSprite() {

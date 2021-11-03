@@ -16,6 +16,7 @@ let pieces;
 
 let scx;
 let scy;
+let offset;
 
 let types;
 let codes;
@@ -52,6 +53,7 @@ function preload() {
       [loadImage("./assets/pixel/bking.png")  ],
     ]
   ];
+  
 }
 
 function setup() {
@@ -63,8 +65,16 @@ function setup() {
 
   scx = width/8;
   scy = height/8;
+  offset = width/8/15;
 
   initBoard();
+
+  // for (let j = 0; j < 2; j++) {
+  //   for (let i = 0; i < sprites[j].length; i++) {
+  //     // console.log(sprites[j][i][0]);
+  //     sprites[j][i][0].resizeNN(65, 65);
+  //   }
+  // }
 }
 
 function draw() {
