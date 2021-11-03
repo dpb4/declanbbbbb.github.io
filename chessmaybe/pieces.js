@@ -66,7 +66,7 @@ class Piece {
     // fill(0);
     // text(this.name, this.x*scx + scx/2, this.y*scy + scy/2);
     // pop();
-    image(this.getSprite(), this.x*scx + 5, this.y*scy + 5);
+    image(this.getSprite(), this.x*scx, this.y*scy);
   }
 
   getSprite() {
@@ -386,6 +386,7 @@ class King extends Piece {
                 }
               } else {
                 //TODO pawns not working
+<<<<<<< HEAD
 
                 if (curPiece.isFlankingKing(board)) {
                   return true;
@@ -397,6 +398,14 @@ class King extends Piece {
                 //     return true;
                 //   }
                 // }
+=======
+                for (let i = 0; i < 2; i++) {
+                  if(curPiece.checkFlank(curPiece.x, curPiece.y, curPiece.moves[i])) {
+                    //TODO this is if the pawn can take ANY piece not just the king
+                    return true;
+                  }
+                }
+>>>>>>> parent of 1895bd7 (z fds sdfsdgxfdes)
               }
             }
           }

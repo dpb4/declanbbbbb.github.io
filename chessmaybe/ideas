@@ -1,3 +1,0 @@
-rewrite pawn code so that getpossiblemoves includes the flanks then check the flanks in getmovesincheck
-
-rename getmovesincheck

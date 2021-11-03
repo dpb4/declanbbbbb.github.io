@@ -55,7 +55,7 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(680, 680);
+  createCanvas(600, 600);
   noStroke();
 
   types = {'p': Pawn, 'n': Knight, 'b': Bishop, 'r': Rook, 'q': Queen, 'k': King};
