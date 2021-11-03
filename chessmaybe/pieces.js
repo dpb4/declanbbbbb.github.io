@@ -66,7 +66,7 @@ class Piece {
     // fill(0);
     // text(this.name, this.x*scx + scx/2, this.y*scy + scy/2);
     // pop();
-    image(this.getSprite(), this.x*scx, this.y*scy);
+    image(this.getSprite(), this.x*scx + 5, this.y*scy + 5);
   }
 
   getSprite() {
@@ -234,23 +234,23 @@ class Pawn extends Piece {
     // return nx < 0 || nx > 7 || ny < 0 || ny > 7 || pieces[ny][nx] === 0;
   }
 
-  isFlankingKing(board) {
+  // isFlankingKing(board) {
 
-    for (let i = 0; i < 2; i++) {
-      let nx = this.x + this.moves[i][0];
-      let ny = this.y + this.moves[i][1];
-      if (this.checkFlank(this.x, this.y, this.moves[i])) {
-        if (board[ny][nx] !== 0) {
+  //   for (let i = 0; i < 2; i++) {
+  //     let nx = this.x + this.moves[i][0];
+  //     let ny = this.y + this.moves[i][1];
+  //     if (this.checkFlank(this.x, this.y, this.moves[i])) {
+  //       if (board[ny][nx] !== 0) {
 
-          if (board[ny][nx].instanceof(King) && board[ny][nx].team === -this.team) {
-            return true;
-          }
+  //         if (board[ny][nx].instanceof(King) && board[ny][nx].team === -this.team) {
+  //           return true;
+  //         }
           
-        }
-      }
-    }
-    return false;
-  }
+  //       }
+  //     }
+  //   }
+  //   return false;
+  // }
 
   getPossibleMoves() {
     // TODO check for enemies and en passant
@@ -377,36 +377,27 @@ class King extends Piece {
             if (curPiece !== whiteKing && curPiece !== blackKing) {
 
               let moves = curPiece.getPossibleMoves(board);
-              if (curPiece.code !== 'p') {
-                for (let m of moves) {
-  
-                  if (x + m[0] === posx && y + m[1] === posy) {
-                    return true;
-                  }
-                }
-              } else {
-                //TODO pawns not working
-<<<<<<< HEAD
+              for (let m of moves) {
 
-                if (curPiece.isFlankingKing(board)) {
+                if (x + m[0] === posx && y + m[1] === posy) {
                   return true;
                 }
-                // let flanks = curPiece.getFlankMoves();
-                // for (let f of flanks) {
-                //   if(curPiece.checkFlank(curPiece.x, curPiece.y, f)) {
-                //     //TODO this is if the pawn can take ANY piece not just the king
-                //     return true;
-                //   }
-                // }
-=======
-                for (let i = 0; i < 2; i++) {
-                  if(curPiece.checkFlank(curPiece.x, curPiece.y, curPiece.moves[i])) {
-                    //TODO this is if the pawn can take ANY piece not just the king
-                    return true;
-                  }
-                }
->>>>>>> parent of 1895bd7 (z fds sdfsdgxfdes)
               }
+              // if (curPiece.code !== 'p') {
+              // } else {
+              //   //TODO pawns not working
+
+              //   // if (curPiece.isFlankingKing(board)) {
+              //   //   return true;
+              //   // }
+              //   // let flanks = curPiece.getFlankMoves();
+              //   // for (let f of flanks) {
+              //   //   if(curPiece.checkFlank(curPiece.x, curPiece.y, f)) {
+              //   //     //TODO this is if the pawn can take ANY piece not just the king
+              //   //     return true;
+              //   //   }
+              //   // }
+              // }
             }
           }
         }
