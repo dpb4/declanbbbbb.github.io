@@ -10,6 +10,8 @@ let startingBoard = [
 ];
 // TODO consider pawn diagonals in king moves, en passant, castling, consider adding blank class, stalemate rule, king list, everything else
 
+// resizeNN.js is NOT MY CODE. p5 doesn't have nearest neighbor resizing by default so pixel art gets blurry. that script just implements it.
+
 // white: -1
 // black: 1
 let pieces;
@@ -57,7 +59,7 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(680, 680);
+  createCanvas(544, 544); // multiples of 8 and 17 (136)
   noStroke();
 
   types = {'p': Pawn, 'n': Knight, 'b': Bishop, 'r': Rook, 'q': Queen, 'k': King};
@@ -65,16 +67,15 @@ function setup() {
 
   scx = width/8;
   scy = height/8;
-  offset = width/8/15;
+  offset = width/8/17; // 15x15 with one on either side (17x17)
 
   initBoard();
 
-  // for (let j = 0; j < 2; j++) {
-  //   for (let i = 0; i < sprites[j].length; i++) {
-  //     // console.log(sprites[j][i][0]);
-  //     sprites[j][i][0].resizeNN(65, 65);
-  //   }
-  // }
+  for (let j = 0; j < 2; j++) {
+    for (let i = 0; i < sprites[j].length; i++) {
+      sprites[j][i][0].resizeNN(width/8/17*15, width/8/17*15);
+    }
+  }
 }
 
 function draw() {
@@ -188,7 +189,7 @@ function mouseClicked() {
   let mouseXIndex = floor(mouseX/scx);
   let mouseYIndex = floor(mouseY/scy);
   
-  if (mouseX < width && mouseY < height) {
+  if (mouseX < width && mouseX > 0 && mouseY < height && mouseY > 0) {
     if (selectedIsProper) {
       let found = false;
       let moves = selectedPiece.getMovesInCheck();

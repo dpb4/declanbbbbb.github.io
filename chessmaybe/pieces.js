@@ -104,9 +104,6 @@ class Piece {
 
       newBoard[this.y][this.x] = 0;
       newBoard[this.y + m[1]][this.x + m[0]] = new types[pieces[this.y][this.x].code](this.x + m[0], this.y + m[1], this.team);
-      // newBoard[this.y + m[1]][this.x + m[0]].x += m[0];
-      // newBoard[this.y + m[1]][this.x + m[0]].y += m[1];
-      // newBoard[this.y + m[1]][this.x + m[0]].hasMoved = true;
 
       if (this.team === -1) {
         if (!whiteKing.isInCheck(whiteKing.x, whiteKing.y, newBoard)) {
@@ -210,36 +207,40 @@ class Pawn extends Piece {
     // return nx < 0 || nx > 7 || ny < 0 || ny > 7 || pieces[ny][nx] === 0;
   }
 
-  checkFlank(x, y, move) {
+  checkFlank(x, y, move, board=pieces) {
     let nx = x + move[0];
     let ny = y + move[1];
     
     if (nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7) {
-      if (pieces[ny][nx] !== 0) {
-        return pieces[ny][nx].team === -this.team;
+      // console.log(board[ny][nx]);
+      if (board[ny][nx] !== 0) {
+        return board[ny][nx].team === -this.team;
       }
     }
     return false;
     // return nx < 0 || nx > 7 || ny < 0 || ny > 7 || pieces[ny][nx] === 0;
   }
 
-  // isFlankingKing(board) {
+  isFlankingKing(board=pieces) {
 
-  //   for (let i = 0; i < 2; i++) {
-  //     let nx = this.x + this.moves[i][0];
-  //     let ny = this.y + this.moves[i][1];
-  //     if (this.checkFlank(this.x, this.y, this.moves[i])) {
-  //       if (board[ny][nx] !== 0) {
-
-  //         if (board[ny][nx].instanceof(King) && board[ny][nx].team === -this.team) {
-  //           return true;
-  //         }
+    for (let i = 0; i < 2; i++) {
+      let nx = this.x + this.moves[i][0];
+      let ny = this.y + this.moves[i][1];
+      // console.log(this.moves[i]);
+      if (this.checkFlank(this.x, this.y, this.moves[i], board)) {
+        // console.log("yes");
+        if (board[ny][nx] !== 0) {
+          // console.log("not zero");
+          if (board[ny][nx].code === 'k' && board[ny][nx].team === -this.team) {
+            // console.log("is opposing king");
+            return true;
+          }
           
-  //       }
-  //     }
-  //   }
-  //   return false;
-  // }
+        }
+      }
+    }
+    return false;
+  }
 
   getPossibleMoves() {
     // TODO check for enemies and en passant
@@ -366,27 +367,26 @@ class King extends Piece {
             if (curPiece !== whiteKing && curPiece !== blackKing) {
 
               let moves = curPiece.getPossibleMoves(board);
-              for (let m of moves) {
+              if (curPiece.code !== 'p') {
+                for (let m of moves) {
+                  if (x + m[0] === posx && y + m[1] === posy) {
+                    return true;
+                  }
+                }
+              } else {
+                //TODO pawns not working
 
-                if (x + m[0] === posx && y + m[1] === posy) {
+                if (curPiece.isFlankingKing(board)) {
                   return true;
                 }
+              //   let flanks = curPiece.getFlankMoves();
+              //   for (let f of flanks) {
+              //     if(curPiece.checkFlank(curPiece.x, curPiece.y, f)) {
+              //       //TODO this is if the pawn can take ANY piece not just the king
+              //       return true;
+              //     }
+              //   }
               }
-              // if (curPiece.code !== 'p') {
-              // } else {
-              //   //TODO pawns not working
-
-              //   // if (curPiece.isFlankingKing(board)) {
-              //   //   return true;
-              //   // }
-              //   // let flanks = curPiece.getFlankMoves();
-              //   // for (let f of flanks) {
-              //   //   if(curPiece.checkFlank(curPiece.x, curPiece.y, f)) {
-              //   //     //TODO this is if the pawn can take ANY piece not just the king
-              //   //     return true;
-              //   //   }
-              //   // }
-              // }
             }
           }
         }
