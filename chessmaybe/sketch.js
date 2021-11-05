@@ -11,6 +11,7 @@ let startingBoard = [
 // TODO en passant, castling, consider adding blank class, stalemate rule, king list, everything else
 
 // resizeNN.js is NOT MY CODE. p5 doesn't have nearest neighbor resizing by default so pixel art gets blurry. that script just implements it.
+// https://gist.github.com/GoToLoop/2e12acf577506fd53267e1d186624d7c
 
 // white: -1
 // black: 1
@@ -42,6 +43,7 @@ let whiteKing;
 function preload() {
   tap = loadSound('./assets/move.wav');
   font = loadFont('./assets/IMFellDWPica-Regular.ttf');
+
   // layout: sprites[team][piece][theme]
   sprites = [
     [
@@ -78,6 +80,7 @@ function setup() {
 
   initBoard();
 
+  // this resizes the pixel art nicely
   for (let j = 0; j < 2; j++) {
     for (let i = 0; i < sprites[j].length; i++) {
       sprites[j][i][0].resizeNN(width/8/17*15, width/8/17*15);

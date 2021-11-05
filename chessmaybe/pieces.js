@@ -5,6 +5,7 @@ class Piece {
     this.team = team;
     this.moves;
     this.code;
+    this.hasMoved = false;
   }
 
   checkMove(x, y, move, board=pieces) {
@@ -176,7 +177,6 @@ class Pawn extends Piece {
     ];
     this.name = 'pawn';
     this.code = 'p';
-    this.hasMoved = false;
   }
 
   move(x, y) {
@@ -313,7 +313,6 @@ class Queen extends FreePiece {
 }
 
 class King extends Piece {
-  // check for check obvy
   constructor(x, y, team) {
     super(x, y, team);
     this.moves = [
@@ -352,10 +351,6 @@ class King extends Piece {
         let curPiece = board[y][x];
         
         if (curPiece !== 0) {
-          // if (board !== pieces) {
-
-          //   console.log(curPiece);
-          // }
   
           // look at every piece, if its an enemy:
           if (curPiece.team === -this.team) {
@@ -371,18 +366,10 @@ class King extends Piece {
                   }
                 }
               } else {
-                //TODO pawns not working
 
                 if (curPiece.isFlankingKing(board)) {
                   return true;
                 }
-              //   let flanks = curPiece.getFlankMoves();
-              //   for (let f of flanks) {
-              //     if(curPiece.checkFlank(curPiece.x, curPiece.y, f)) {
-              //       //TODO this is if the pawn can take ANY piece not just the king
-              //       return true;
-              //     }
-              //   }
               }
             }
           }
@@ -394,7 +381,7 @@ class King extends Piece {
 
   getMovesInCheck() {
     // if you dont override the function it will turn into a stack error
-    //TODO kings are broken around pawns
+
     let uncheckedMoves = this.getPossibleMoves();
     let boards = this.getPossibleBoards();
     let checkedMoves = [];
@@ -406,7 +393,45 @@ class King extends Piece {
       }
     }
 
+    if (!this.isInCheck() && !this.hasMoved) {
+      checkedMoves.push(this.castleMoves());
+    }
     return checkedMoves;
+  }
+
+  castleMoves() {
+    let out = [];
+
+    for (let x = 0; x < 2; x++) {
+      let failed = false;
+      let p = pieces[this.y][x*7];
+
+      if (p.code === 'r' && !p.hasMoved) {
+        
+        let d = abs(this.x - p.x);
+        for (let i = 1; i < d; x++) {
+          let xpos = floor(lerp(this.x, p.x, i/d));
+
+          if (pieces[this.y][xpos] === 0) {
+            if (this.isInCheck(xpos, this.y)) {
+              failed = true;
+            }
+          } else {
+            failed = true;
+          }
+        }
+      }
+    }
+
+    if (!failed) {
+      if (x === 0) {
+        out.push([-3, 0]);
+      } else {
+        out.push([2, 0]);
+      }
+    }
+
+    return out;
   }
 
   getPossibleMoves() {
