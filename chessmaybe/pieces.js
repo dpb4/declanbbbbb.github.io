@@ -228,16 +228,11 @@ class Pawn extends Piece {
     for (let i = 0; i < 2; i++) {
       let nx = this.x + this.moves[i][0];
       let ny = this.y + this.moves[i][1];
-      // console.log(this.moves[i]);
       if (this.checkFlank(this.x, this.y, this.moves[i], board)) {
-        // console.log("yes");
         if (board[ny][nx] !== 0) {
-          // console.log("not zero");
           if (board[ny][nx].code === 'k' && board[ny][nx].team === -this.team) {
-            // console.log("is opposing king");
             return true;
           }
-          
         }
       }
     }

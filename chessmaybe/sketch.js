@@ -27,18 +27,21 @@ let turn = -1;
 let selectedPiece;
 
 let picking = true;
+let done = false;
 
 let selectedIsProper = false;
 let checked = false;
 
 let sprites = [];
 let theme = 0;
+let font;
 let tap;
 
 let blackKing;
 let whiteKing;
 function preload() {
   tap = loadSound('./assets/move.wav');
+  font = loadFont('./assets/IMFellDWPica-Regular.ttf');
   // layout: sprites[team][piece][theme]
   sprites = [
     [
@@ -64,6 +67,7 @@ function preload() {
 function setup() {
   createCanvas(544, 544); // multiples of 8 and 17 (136)
   noStroke();
+  textFont(font);
 
   types = {'p': Pawn, 'n': Knight, 'b': Bishop, 'r': Rook, 'q': Queen, 'k': King};
   codes = {'p': 0, 'n': 1, 'b': 2, 'r': 3, 'q': 4, 'k': 5};
@@ -85,20 +89,33 @@ function draw() {
   background(220);
   drawGrid();
   displayPieces();
+  if (!done) {
 
-  selectedIsProper = selectedPiece !== undefined && selectedPiece.team === turn;
-  checked = false;
-  
-  drawCheck();
-  
-  if (selectedIsProper) {
-    highlightMoves(selectedPiece, selectedPiece.getMovesInCheck());
+    selectedIsProper = selectedPiece !== undefined && selectedPiece.team === turn;
+    checked = false;
+    
+    drawCheck();
+    
+    if (selectedIsProper) {
+      highlightMoves(selectedPiece, selectedPiece.getMovesInCheck());
+    }
   }
-
   if (checkForCheckMate()) {
-    // TODO do something
+    done = true;
 
-    // state variable? how show checkmate?
+    push();
+    stroke(0);
+    strokeWeight(8);
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textSize(120);
+    if (turn === -1) {
+      text("Black wins", width/2, height/2);
+    } else {
+      text("White wins", width/2, height/2);
+    }
+
+    pop();
   }
 }
 
