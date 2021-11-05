@@ -40,6 +40,7 @@ class Piece {
 
     turn = -turn;
     this.hasMoved = true;
+    tap.play();
   }
 
   canTakeSquare(x, y) {
@@ -196,6 +197,7 @@ class Pawn extends Piece {
     
     turn = -turn;
     this.hasMoved = true;
+    tap.play();
   }
 
   checkMove(x, y, move) {

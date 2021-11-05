@@ -8,7 +8,7 @@ let startingBoard = [
   ['p','p','p','p','p','p','p','p'],
   ['r','n','b','q', 0 ,'b','n','r']
 ];
-// TODO consider pawn diagonals in king moves, en passant, castling, consider adding blank class, stalemate rule, king list, everything else
+// TODO en passant, castling, consider adding blank class, stalemate rule, king list, everything else
 
 // resizeNN.js is NOT MY CODE. p5 doesn't have nearest neighbor resizing by default so pixel art gets blurry. that script just implements it.
 
@@ -30,12 +30,15 @@ let picking = true;
 
 let selectedIsProper = false;
 let checked = false;
+
 let sprites = [];
 let theme = 0;
+let tap;
 
 let blackKing;
 let whiteKing;
 function preload() {
+  tap = loadSound('./assets/move.wav');
   // layout: sprites[team][piece][theme]
   sprites = [
     [
@@ -91,8 +94,28 @@ function draw() {
   if (selectedIsProper) {
     highlightMoves(selectedPiece, selectedPiece.getMovesInCheck());
   }
+
+  if (checkForCheckMate()) {
+    // TODO do something
+
+    // state variable? how show checkmate?
+  }
 }
 
+function checkForCheckMate() {
+  for (let y = 0; y < 7; y++) {
+    for (let x = 0; x < 7; x++) {
+      if (pieces[y][x] !== 0) {
+        if (pieces[y][x].team === turn) {
+          if (pieces[y][x].getMovesInCheck().length !== 0) {
+            return false;
+          }
+        }
+      }
+    }
+  }
+  return true;
+}
 function drawCheck() {
   push();
   fill(255, 255, 0, 127);
