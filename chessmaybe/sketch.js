@@ -8,7 +8,7 @@ let startingBoard = [
   ['p','p','p','p','p','p','p','p'],
   ['r','n','b','q', 0 ,'b','n','r']
 ];
-// TODO en passant, castling, consider adding blank class, stalemate rule, king list, everything else
+// TODO rename getMovesInCheck, en passant, consider adding blank class, stalemate rule (done?), king list, everything else
 
 // resizeNN.js is NOT MY CODE. p5 doesn't have nearest neighbor resizing by default so pixel art gets blurry. that script just implements it.
 // https://gist.github.com/GoToLoop/2e12acf577506fd53267e1d186624d7c
@@ -34,7 +34,7 @@ let selectedIsProper = false;
 let checked = false;
 
 let sprites = [];
-let theme = 0;
+let theme = 1;
 let font;
 let tap;
 
@@ -47,20 +47,20 @@ function preload() {
   // layout: sprites[team][piece][theme]
   sprites = [
     [
-      [loadImage("./assets/pixel/wpawn.png")  ],
-      [loadImage("./assets/pixel/wknight.png")],
-      [loadImage("./assets/pixel/wbishop.png")],
-      [loadImage("./assets/pixel/wrook.png")  ],
-      [loadImage("./assets/pixel/wqueen.png") ],
-      [loadImage("./assets/pixel/wking.png")  ],
+      [loadImage("./assets/pixel/wpawn.png")  , loadImage("./assets/retro/wpawn.png")  ],
+      [loadImage("./assets/pixel/wknight.png"), loadImage("./assets/retro/wknight.png")],
+      [loadImage("./assets/pixel/wbishop.png"), loadImage("./assets/retro/wbishop.png")],
+      [loadImage("./assets/pixel/wrook.png")  , loadImage("./assets/retro/wrook.png")  ],
+      [loadImage("./assets/pixel/wqueen.png") , loadImage("./assets/retro/wqueen.png") ],
+      [loadImage("./assets/pixel/wking.png")  , loadImage("./assets/retro/wking.png")  ],
     ],
     [
-      [loadImage("./assets/pixel/bpawn.png")  ],
-      [loadImage("./assets/pixel/bknight.png")],
-      [loadImage("./assets/pixel/bbishop.png")],
-      [loadImage("./assets/pixel/brook.png")  ],
-      [loadImage("./assets/pixel/bqueen.png") ],
-      [loadImage("./assets/pixel/bking.png")  ],
+      [loadImage("./assets/pixel/bpawn.png")  , loadImage("./assets/retro/bpawn.png")  ],
+      [loadImage("./assets/pixel/bknight.png"), loadImage("./assets/retro/bknight.png")],
+      [loadImage("./assets/pixel/bbishop.png"), loadImage("./assets/retro/bbishop.png")],
+      [loadImage("./assets/pixel/brook.png")  , loadImage("./assets/retro/brook.png")  ],
+      [loadImage("./assets/pixel/bqueen.png") , loadImage("./assets/retro/bqueen.png") ],
+      [loadImage("./assets/pixel/bking.png")  , loadImage("./assets/retro/bking.png")  ],
     ]
   ];
   
@@ -83,7 +83,9 @@ function setup() {
   // this resizes the pixel art nicely
   for (let j = 0; j < 2; j++) {
     for (let i = 0; i < sprites[j].length; i++) {
-      sprites[j][i][0].resizeNN(width/8/17*15, width/8/17*15);
+      for (let k = 0; k < sprites[j][i].length; k++) {
+        sprites[j][i][k].resizeNN(width/8/17*15, width/8/17*15);
+      }
     }
   }
 }
@@ -103,6 +105,7 @@ function draw() {
       highlightMoves(selectedPiece, selectedPiece.getMovesInCheck());
     }
   }
+  
   if (checkForCheckMate()) {
     done = true;
 
@@ -123,6 +126,7 @@ function draw() {
 }
 
 function checkForCheckMate() {
+  // this includes stalemate i think
   for (let y = 0; y < 7; y++) {
     for (let x = 0; x < 7; x++) {
       if (pieces[y][x] !== 0) {
@@ -136,6 +140,7 @@ function checkForCheckMate() {
   }
   return true;
 }
+
 function drawCheck() {
   push();
   fill(255, 255, 0, 127);
@@ -240,6 +245,20 @@ function mouseClicked() {
       for (let move of moves) {
         if (move[0] + selectedPiece.x === mouseXIndex && move[1] + selectedPiece.y === mouseYIndex) {
           selectedPiece.move(mouseXIndex, mouseYIndex);
+
+          if (selectedPiece.code === 'k') {
+            if (abs(move[0]) > 1) {
+              // if the king is castling, move the rook too
+              let xIndex = max(0, min(move[0], 1)) * 7;
+
+              // TODO left castle broken
+              pieces[selectedPiece.y][xIndex].move(selectedPiece.x - move[0]/2, selectedPiece.y);
+
+              // turn is toggled twice since two pieces move so it needs to be toggled once more
+              turn = -turn;
+            }
+          }
+
           found = true;
           break;
         }
@@ -251,4 +270,17 @@ function mouseClicked() {
       selectedPiece = pieces[mouseYIndex][mouseXIndex];
     }
   }
+}
+
+function mouseWheel(event) {
+  // change the theme up or down according to the scroll
+  theme += ceil(-event.delta/100);
+  
+  // loop back around
+  if (theme < 0) {
+    theme = sprites[0][0].length-1;
+  }
+  theme %= sprites[0][0].length;
+
+  return false;
 }

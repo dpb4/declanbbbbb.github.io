@@ -394,7 +394,8 @@ class King extends Piece {
     }
 
     if (!this.isInCheck() && !this.hasMoved) {
-      checkedMoves.push(this.castleMoves());
+      // castleMoves returns an array of arrays so it must be flattened
+      checkedMoves.push(this.castleMoves().flat());
     }
     return checkedMoves;
   }
@@ -409,7 +410,7 @@ class King extends Piece {
       if (p.code === 'r' && !p.hasMoved) {
         
         let d = abs(this.x - p.x);
-        for (let i = 1; i < d; x++) {
+        for (let i = 1; i < d; i++) {
           let xpos = floor(lerp(this.x, p.x, i/d));
 
           if (pieces[this.y][xpos] === 0) {
@@ -421,15 +422,13 @@ class King extends Piece {
           }
         }
       }
-    }
 
-    if (!failed) {
-      if (x === 0) {
-        out.push([-3, 0]);
-      } else {
-        out.push([2, 0]);
+      if (!failed) {
+        // maps [0, 1] to [-2, 2]
+        out.push([x*4 - 2, 0]);
       }
     }
+
 
     return out;
   }
