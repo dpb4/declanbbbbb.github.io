@@ -34,7 +34,7 @@ let selectedIsProper = false;
 let checked = false;
 
 let sprites = [];
-let theme = 1;
+let theme = 0;
 let font;
 let tap;
 
@@ -94,17 +94,6 @@ function draw() {
   background(220);
   drawGrid();
   displayPieces();
-  if (!done) {
-
-    selectedIsProper = selectedPiece !== undefined && selectedPiece.team === turn;
-    checked = false;
-    
-    drawCheck();
-    
-    if (selectedIsProper) {
-      highlightMoves(selectedPiece, selectedPiece.getMovesInCheck());
-    }
-  }
   
   if (checkForCheckMate()) {
     done = true;
@@ -123,22 +112,37 @@ function draw() {
 
     pop();
   }
+
+  if (!done) {
+
+    selectedIsProper = selectedPiece !== undefined && selectedPiece.team === turn;
+    checked = false;
+    
+    drawCheck();
+    
+    if (selectedIsProper) {
+      highlightMoves(selectedPiece, selectedPiece.getMovesInCheck());
+    }
+  }
+  
 }
 
 function checkForCheckMate() {
   // this includes stalemate i think
-  for (let y = 0; y < 7; y++) {
-    for (let x = 0; x < 7; x++) {
+  let moveFound = false;
+  for (let y = 0; y < 8; y++) {
+    for (let x = 0; x < 8; x++) {
       if (pieces[y][x] !== 0) {
         if (pieces[y][x].team === turn) {
           if (pieces[y][x].getMovesInCheck().length !== 0) {
-            return false;
+            // if there is a move, it is not checkmate
+            moveFound = true;
           }
         }
       }
     }
   }
-  return true;
+  return !moveFound;
 }
 
 function drawCheck() {
