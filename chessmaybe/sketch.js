@@ -1,3 +1,12 @@
+// Chess
+// Declan Bainbridge
+// 11/8/21
+
+// things that aren't finished: en passant, 3 move repetition draw (kind of optional)
+
+// resizeNN.js is NOT MY CODE. p5 doesn't have nearest neighbor resizing by default so pixel art gets blurry. that script just implements it.
+// https://gist.github.com/GoToLoop/2e12acf577506fd53267e1d186624d7c
+
 let startingBoard = [
   ['r','n','b','q', 0 ,'b','n','r'],
   ['p','p','p','p','p','p','p','p'],
@@ -8,22 +17,26 @@ let startingBoard = [
   ['p','p','p','p','p','p','p','p'],
   ['r','n','b','q', 0 ,'b','n','r']
 ];
-// TODO rename getMovesInCheck, en passant, consider adding blank class, stalemate rule (done?), king list, everything else
 
-// resizeNN.js is NOT MY CODE. p5 doesn't have nearest neighbor resizing by default so pixel art gets blurry. that script just implements it.
-// https://gist.github.com/GoToLoop/2e12acf577506fd53267e1d186624d7c
+// teams/turns: white: -1, black: 1
 
-// white: -1
-// black: 1
+// the array that holds the current board
 let pieces;
 
+// scale of coordinates 
 let scx;
 let scy;
+
+// for keeping a border around the pieces
 let offset;
 
+// list of the types of pieces
 let types;
+
+// list that turns a 'code' into an index
 let codes;
 
+// current turn
 let turn = -1;
 let selectedPiece;
 
@@ -31,36 +44,43 @@ let picking = true;
 let done = false;
 
 let selectedIsProper = false;
-let checked = false;
 
 let sprites = [];
 let theme = 0;
+// this controls the text fading out
+let themeNameAlphaBuffer = 0;
+
 let font;
 let tap;
 
 let blackKing;
 let whiteKing;
+
 function preload() {
   tap = loadSound('./assets/move.wav');
   font = loadFont('./assets/IMFellDWPica-Regular.ttf');
 
-  // layout: sprites[team][piece][theme]
+  // the array of all the images
+  // layout: sprites[white/black/theme names][piece][theme]
   sprites = [
     [
-      [loadImage("./assets/pixel/wpawn.png")  , loadImage("./assets/retro/wpawn.png")  ],
-      [loadImage("./assets/pixel/wknight.png"), loadImage("./assets/retro/wknight.png")],
-      [loadImage("./assets/pixel/wbishop.png"), loadImage("./assets/retro/wbishop.png")],
-      [loadImage("./assets/pixel/wrook.png")  , loadImage("./assets/retro/wrook.png")  ],
-      [loadImage("./assets/pixel/wqueen.png") , loadImage("./assets/retro/wqueen.png") ],
-      [loadImage("./assets/pixel/wking.png")  , loadImage("./assets/retro/wking.png")  ],
+      [loadImage("./assets/pixel/wpawn.png")  , loadImage("./assets/retro/wpawn.png")  , loadImage("./assets/realism/wpawn.png")  ],
+      [loadImage("./assets/pixel/wknight.png"), loadImage("./assets/retro/wknight.png"), loadImage("./assets/realism/wknight.png")],
+      [loadImage("./assets/pixel/wbishop.png"), loadImage("./assets/retro/wbishop.png"), loadImage("./assets/realism/wbishop.png")],
+      [loadImage("./assets/pixel/wrook.png")  , loadImage("./assets/retro/wrook.png")  , loadImage("./assets/realism/wrook.png")  ],
+      [loadImage("./assets/pixel/wqueen.png") , loadImage("./assets/retro/wqueen.png") , loadImage("./assets/realism/wqueen.png") ],
+      [loadImage("./assets/pixel/wking.png")  , loadImage("./assets/retro/wking.png")  , loadImage("./assets/realism/wking.png")  ],
     ],
     [
-      [loadImage("./assets/pixel/bpawn.png")  , loadImage("./assets/retro/bpawn.png")  ],
-      [loadImage("./assets/pixel/bknight.png"), loadImage("./assets/retro/bknight.png")],
-      [loadImage("./assets/pixel/bbishop.png"), loadImage("./assets/retro/bbishop.png")],
-      [loadImage("./assets/pixel/brook.png")  , loadImage("./assets/retro/brook.png")  ],
-      [loadImage("./assets/pixel/bqueen.png") , loadImage("./assets/retro/bqueen.png") ],
-      [loadImage("./assets/pixel/bking.png")  , loadImage("./assets/retro/bking.png")  ],
+      [loadImage("./assets/pixel/bpawn.png")  , loadImage("./assets/retro/bpawn.png")  , loadImage("./assets/realism/bpawn.png")  ],
+      [loadImage("./assets/pixel/bknight.png"), loadImage("./assets/retro/bknight.png"), loadImage("./assets/realism/bknight.png")],
+      [loadImage("./assets/pixel/bbishop.png"), loadImage("./assets/retro/bbishop.png"), loadImage("./assets/realism/bbishop.png")],
+      [loadImage("./assets/pixel/brook.png")  , loadImage("./assets/retro/brook.png")  , loadImage("./assets/realism/brook.png")  ],
+      [loadImage("./assets/pixel/bqueen.png") , loadImage("./assets/retro/bqueen.png") , loadImage("./assets/realism/bqueen.png") ],
+      [loadImage("./assets/pixel/bking.png")  , loadImage("./assets/retro/bking.png")  , loadImage("./assets/realism/bking.png")  ],
+    ],
+    [
+      "Modern",                                "Retro",                                 "Realism"
     ]
   ];
   
@@ -80,9 +100,9 @@ function setup() {
 
   initBoard();
 
-  // this resizes the pixel art nicely
+  // this resizes the pixel art to the right size
   for (let j = 0; j < 2; j++) {
-    for (let i = 0; i < sprites[j].length; i++) {
+    for (let i = 0; i < 6; i++) {
       for (let k = 0; k < sprites[j][i].length; k++) {
         sprites[j][i][k].resizeNN(width/8/17*15, width/8/17*15);
       }
@@ -92,9 +112,12 @@ function setup() {
 
 function draw() {
   background(220);
+
   drawGrid();
   displayPieces();
+  drawThemeName();
   
+  // if someone is in checkmate, stop the game and display the winner
   if (checkForCheckMate()) {
     done = true;
 
@@ -113,28 +136,50 @@ function draw() {
     pop();
   }
 
+  // normal turn stuff
   if (!done) {
-
+    // update the selectedpiece and make sure it is a piece and not zero
     selectedIsProper = selectedPiece !== undefined && selectedPiece.team === turn;
-    checked = false;
     
+    // if in check, highlight the affected king
     drawCheck();
     
+    // if you have actually selected a piece, show its moves
     if (selectedIsProper) {
-      highlightMoves(selectedPiece, selectedPiece.getMovesInCheck());
+      highlightMoves(selectedPiece, selectedPiece.getAllowableMoves());
     }
   }
   
 }
 
+function drawThemeName() {
+  // this draws text in the bottom left whenever the theme is switched
+
+  push();
+  fill(255, themeNameAlphaBuffer);
+  stroke(0, themeNameAlphaBuffer);
+  strokeWeight(5);
+
+  textSize(36);
+  textAlign(LEFT, TOP);
+  text(`Theme: ${sprites[2][theme]}`, 10, height-50);
+  pop();
+
+  // slowly fade out the text
+  themeNameAlphaBuffer -= 2;
+  themeNameAlphaBuffer = max(themeNameAlphaBuffer, 0);
+}
+
 function checkForCheckMate() {
-  // this includes stalemate i think
+  // if there are no legal moves that you can make, it is checkmate
+  // this happens to include stalemate
+
   let moveFound = false;
   for (let y = 0; y < 8; y++) {
     for (let x = 0; x < 8; x++) {
       if (pieces[y][x] !== 0) {
         if (pieces[y][x].team === turn) {
-          if (pieces[y][x].getMovesInCheck().length !== 0) {
+          if (pieces[y][x].getAllowableMoves().length !== 0) {
             // if there is a move, it is not checkmate
             moveFound = true;
           }
@@ -146,9 +191,12 @@ function checkForCheckMate() {
 }
 
 function drawCheck() {
+  // draw a yellow rectangle highlighting the king in check
+
   push();
   fill(255, 255, 0, 127);
   noStroke();
+
   if (turn === -1) {
     if (whiteKing.isInCheck()) {
       rect(whiteKing.x * scx, whiteKing.y * scy, scx, scy);
@@ -162,13 +210,17 @@ function drawCheck() {
 }
 
 function initBoard() {
+  // this sets up the board and all the pieces
   let curTeam = 1;
   pieces = startingBoard;
 
+  // go through all the characters and turn them into pieces
+  // curTeam is the starting team of the pieces, which switches halfway down the board
   for (let y = 0; y < 8; y++) {
     if (y === 4) {
       curTeam = -1;
     }
+
     for (let x = 0; x < 8; x++) {
       if (startingBoard[y][x] !== 0) {
         // i cannot believe this works
@@ -177,6 +229,7 @@ function initBoard() {
     }
   }
 
+  // setup the kings and put them into place
   blackKing = new King(4, 0, 1);
   whiteKing = new King(4, 7, -1);
   pieces[0][4] = blackKing;
@@ -195,6 +248,7 @@ function initBoard() {
 }
 
 function drawGrid() {
+  // draws a grid of rectangles of alternating colour
   for (let x = 0; x < 8; x++) {
     for (let y = 0; y < 8; y++) {
       fill((x+y+1)%2 * 255);
@@ -204,9 +258,7 @@ function drawGrid() {
 }
 
 function displayPieces() {
-  push();
-  stroke(255, 0, 0);
-  fill(255, 0, 0);
+  // calls piece.display on every piece
   for (let x = 0; x < 8; x++) {
     for (let y = 0; y < 8; y++) {
       if (pieces[y][x] !== 0) {
@@ -214,10 +266,9 @@ function displayPieces() {
       }
     }
   }
-  pop();
 }
 
-function highlightMoves(p, moves=p.getMovesInCheck()) {
+function highlightMoves(p, moves=p.getAllowableMoves()) {
   let x = p.x;
   let y = p.y;
 
@@ -244,7 +295,7 @@ function mouseClicked() {
   if (mouseX < width && mouseX > 0 && mouseY < height && mouseY > 0) {
     if (selectedIsProper) {
       let found = false;
-      let moves = selectedPiece.getMovesInCheck();
+      let moves = selectedPiece.getAllowableMoves();
   
       for (let move of moves) {
         if (move[0] + selectedPiece.x === mouseXIndex && move[1] + selectedPiece.y === mouseYIndex) {
@@ -285,6 +336,8 @@ function mouseWheel(event) {
     theme = sprites[0][0].length-1;
   }
   theme %= sprites[0][0].length;
+
+  themeNameAlphaBuffer = 300;
 
   return false;
 }

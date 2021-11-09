@@ -88,7 +88,7 @@ class Piece {
     return boards;
   }
 
-  getMovesInCheck() {
+  getAllowableMoves() {
     // let boards = this.getPossibleBoards();
     let moves = this.getPossibleMoves();
     let allowedMoves = [];
@@ -379,7 +379,7 @@ class King extends Piece {
     return false;
   }
 
-  getMovesInCheck() {
+  getAllowableMoves() {
     // if you dont override the function it will turn into a stack error
 
     let uncheckedMoves = this.getPossibleMoves();
