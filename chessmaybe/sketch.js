@@ -3,6 +3,7 @@
 // 11/8/21
 
 // things that aren't finished: en passant, 3 move repetition draw (kind of optional)
+// TECHNICALLY if a pawn gets to the other side it can become a bishop, knight, rook, OR queen but for simplicity i made the executive decision that they all become queens
 
 // resizeNN.js is NOT MY CODE. p5 doesn't have nearest neighbor resizing by default so pixel art gets blurry. that script just implements it.
 // https://gist.github.com/GoToLoop/2e12acf577506fd53267e1d186624d7c
@@ -146,7 +147,7 @@ function draw() {
     
     // if you have actually selected a piece, show its moves
     if (selectedIsProper) {
-      highlightMoves(selectedPiece, selectedPiece.getAllowableMoves());
+      highlightMoves(selectedPiece);
     }
   }
   
@@ -269,6 +270,7 @@ function displayPieces() {
 }
 
 function highlightMoves(p, moves=p.getAllowableMoves()) {
+  // draws the allowable moves of a given piece (or any other set of moves passed in)
   let x = p.x;
   let y = p.y;
 
@@ -277,12 +279,16 @@ function highlightMoves(p, moves=p.getAllowableMoves()) {
   rect(x*scx, y*scy, scx, scy);
 
   for (let move of moves) {
+    // line from the current position to the new position, from the cetner of squares
     strokeWeight(10);
     stroke(255, 0, 0, 127);
+
     line(x*scx + scx/2, y*scy + scy/2, (x + move[0])*scx + scx/2, (y + move[1])*scy + scy/2);
     
+    // add a dot at every end point of the moves for added clarity (bishops et al were hard to see)
     strokeWeight(20);
     stroke(255, 0, 0);
+
     point((x + move[0])*scx + scx/2, (y + move[1])*scy + scy/2);
   }
   pop();
@@ -292,21 +298,28 @@ function mouseClicked() {
   let mouseXIndex = floor(mouseX/scx);
   let mouseYIndex = floor(mouseY/scy);
   
+  // if the mouse is on the board
   if (mouseX < width && mouseX > 0 && mouseY < height && mouseY > 0) {
+    // if the selected piece is actually a piece
     if (selectedIsProper) {
       let found = false;
       let moves = selectedPiece.getAllowableMoves();
-  
+      
+      // look at the mouse coordinate and see if it is a move that a piece can make
+      // if it is, move there
+      // otherwise, select whatever else you clicked on
       for (let move of moves) {
         if (move[0] + selectedPiece.x === mouseXIndex && move[1] + selectedPiece.y === mouseYIndex) {
+
+          // move the piece
           selectedPiece.move(mouseXIndex, mouseYIndex);
 
+          // if you are trying to move a king more than one square:
           if (selectedPiece.code === 'k') {
             if (abs(move[0]) > 1) {
               // if the king is castling, move the rook too
               let xIndex = max(0, min(move[0], 1)) * 7;
 
-              // TODO left castle broken
               pieces[selectedPiece.y][xIndex].move(selectedPiece.x - move[0]/2, selectedPiece.y);
 
               // turn is toggled twice since two pieces move so it needs to be toggled once more
@@ -314,6 +327,7 @@ function mouseClicked() {
             }
           }
 
+          // a move has been found
           found = true;
           break;
         }
@@ -322,6 +336,7 @@ function mouseClicked() {
         selectedPiece = pieces[mouseYIndex][mouseXIndex];
       }
     } else {
+      // if it is not a piece, try selecting a new one instead
       selectedPiece = pieces[mouseYIndex][mouseXIndex];
     }
   }
@@ -337,6 +352,7 @@ function mouseWheel(event) {
   }
   theme %= sprites[0][0].length;
 
+  // set it to 300 so that it stays solid for a little bit before fading
   themeNameAlphaBuffer = 300;
 
   return false;
