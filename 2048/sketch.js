@@ -6,6 +6,7 @@
 // - describe what you did to take this project "above and beyond"
 
 let gsm;
+let lastState;
 let AISwitch;
 
 let squareWidth;
@@ -13,7 +14,10 @@ let edgeOffset;
 let edgeDarkness;
 let backgroundColour;
 
-let zeroBonus = 0.5;
+let zeroBonus = 100;
+
+let scores = 0;
+let tally = 0;
 
 let sg = [
   [1, 1, 2, 3],
@@ -39,6 +43,7 @@ function setup() {
   textFont('Inter');
 
   gsm = new GameStateManager(OPGradient);
+  lastState = gsm.state.copy();
   
   squareWidth = width/4.5;
   edgeOffset = squareWidth*0.05;
@@ -61,6 +66,7 @@ function setup() {
     color(47, 100, 67),
   ];
   textSize(squareWidth/3);
+  frameRate(10000000000);
 }
 
 function draw() {
@@ -68,6 +74,30 @@ function draw() {
   gsm.displayGame();
   gsm.displayGrid();
   AISwitch.display();
+  // console.log(frameRate());
+  // if (gsm.state.isDead()) {
+    
+  //   tally++;
+  //   console.log(tally);
+  //   scores += gsm.state.score;
+  //   gsm.state = new State();
+  // }
+
+  // if (!gsm.state.isOpen()) {
+  //   if (lastState.equals(gsm.state)) {
+      
+  //     tally++;
+  //     console.log(tally);
+  //     scores += gsm.state.score;
+  //     gsm.state = new State();
+  //   }
+  // }
+
+  // if (tally === 32) {
+  //   console.log("AVG:" + str(scores/tally));
+  // }
+
+  // lastState = gsm.state.copy();
 
   if (AISwitch.state) {
     if (this.frameCount % 1 === 0) {
