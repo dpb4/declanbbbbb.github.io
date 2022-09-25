@@ -14,7 +14,7 @@ let edgeOffset;
 let edgeDarkness;
 let backgroundColour;
 
-let zeroBonus = 100;
+let zeroBonus = 0.2;
 
 let scores = 0;
 let tally = 0;
@@ -66,7 +66,7 @@ function setup() {
     color(47, 100, 67),
   ];
   textSize(squareWidth/3);
-  frameRate(10000000000);
+  // frameRate(10000000000);
 }
 
 function draw() {
@@ -100,7 +100,7 @@ function draw() {
   // lastState = gsm.state.copy();
 
   if (AISwitch.state) {
-    if (this.frameCount % 1 === 0) {
+    if (this.frameCount % 16 === 0 || (keyIsDown(32))) {
       gsm.AIMove();
     }
   }
