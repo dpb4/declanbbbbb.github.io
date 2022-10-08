@@ -6,7 +6,6 @@
 // - describe what you did to take this project "above and beyond"
 
 let gsm;
-let lastState;
 let AISwitch;
 
 let squareWidth;
@@ -14,16 +13,19 @@ let edgeOffset;
 let edgeDarkness;
 let backgroundColour;
 
-let zeroBonus = 0.2;
+let zeroBonus = 1;
 
-let scores = 0;
-let tally = 0;
-
+// let sg = [
+//   [1, 1, 2, 3],
+//   [7, 6, 5, 4],
+//   [8, 9, 10, 11],
+//   [0, 0, 0, 0],
+// ];
 let sg = [
-  [1, 1, 2, 3],
+  [2, 1, 2, 3],
   [7, 6, 5, 4],
   [8, 9, 10, 11],
-  [0, 0, 0, 0],
+  [0, 4, 5, 6],
 ];
 
 let basicGradient = (x) => color((1 - pow(Math.tanh(x / 6), 3)) * 255);
@@ -43,7 +45,6 @@ function setup() {
   textFont('Inter');
 
   gsm = new GameStateManager(OPGradient);
-  lastState = gsm.state.copy();
   
   squareWidth = width/4.5;
   edgeOffset = squareWidth*0.05;
@@ -66,7 +67,6 @@ function setup() {
     color(47, 100, 67),
   ];
   textSize(squareWidth/3);
-  // frameRate(10000000000);
 }
 
 function draw() {
@@ -74,33 +74,9 @@ function draw() {
   gsm.displayGame();
   gsm.displayGrid();
   AISwitch.display();
-  // console.log(frameRate());
-  // if (gsm.state.isDead()) {
-    
-  //   tally++;
-  //   console.log(tally);
-  //   scores += gsm.state.score;
-  //   gsm.state = new State();
-  // }
-
-  // if (!gsm.state.isOpen()) {
-  //   if (lastState.equals(gsm.state)) {
-      
-  //     tally++;
-  //     console.log(tally);
-  //     scores += gsm.state.score;
-  //     gsm.state = new State();
-  //   }
-  // }
-
-  // if (tally === 32) {
-  //   console.log("AVG:" + str(scores/tally));
-  // }
-
-  // lastState = gsm.state.copy();
 
   if (AISwitch.state) {
-    if (this.frameCount % 16 === 0 || (keyIsDown(32))) {
+    if (this.frameCount % 1 === 0) {
       gsm.AIMove();
     }
   }
@@ -165,13 +141,15 @@ function rotateGrid(mat, rotation) {
   for (let y = 0; y < mat.length; y++) {
     for (let x = 0; x < mat[0].length; x++) {
       if (rotation === 0) {
-        out[y][x] = mat[y][x]
+        out[y][x] = mat[y][x];
       } else if (rotation === 1) {
-        out[y][x] = mat[x][3-y]
+        out[y][x] = mat[x][3-y];
       } else if (rotation === 2) {
-        out[y][x] = mat[3-y][3-x]
+        out[y][x] = mat[3-y][3-x];
       } else if (rotation === 3) {
-        out[y][x] = mat[3-x][y]
+        out[y][x] = mat[3-x][y];
+      } else {
+        out[y][x] = mat[y][x];
       }
     }
   }

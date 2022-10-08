@@ -15,7 +15,7 @@ class GameStateManager {
           translate((width - squareWidth*4)/2, (height - squareWidth*4) - (width - squareWidth*4)/2);
 
           // let colour = this.gf(this.state.grid[j][i]);
-          let colour = tileColours[this.state.grid[j][i]-1];
+          let colour = tileColours[constrain(this.state.grid[j][i]-1, 0, 10)];
 
           fill(colour);
           stroke(red(colour) * edgeDarkness, green(colour) * edgeDarkness, blue(colour) * edgeDarkness)
@@ -86,32 +86,47 @@ class GameStateManager {
 
   AIMove() {
     let states = this.state.getAllNextStates();
+
+    // console.log(states);
+
+    // for (let i = 3; i >= 0; i--) {
+    //   if (states[i].equals(this.state)) {
+    //     states.splice(i, 1);
+    //   }
+    // }
     
-    for (let a = 0; a < 4; a++) {
+    for (let a = 0; a < states.length; a++) {
       states[a] = states[a].getAllNextStates();
     }
 
-    for (let a = 0; a < 4; a++) {
-      for (let b = 0; b < 4; b++) {
+    for (let a = 0; a < states.length; a++) {
+      for (let b = 0; b < states[a].length; b++) {
         states[a][b] = states[a][b].getAllNextStates();
       }
     }
 
+
     let CMax = -99999999;
     let CMaxSequence = 0;
-    for (let a = 0; a < 4; a++) {
-      for (let b = 0; b < 4; b++) {
-        for (let c = 0; c < 4; c++) {
-          if (states[a][b][c].evalScore() > CMax) {
-            CMax = states[a][b][c].score;
-            CMaxSequence = str(a) + str(b) + str(c);
+    for (let a = 0; a < states.length; a++) {
+      for (let b = 0; b < states[a].length; b++) {
+        for (let c = 0; c < states[a][b].length; c++) {
+          if (this.objective(states[a][b][c]) > CMax) {
+            CMax = this.objective(states[a][b][c]);
+            CMaxSequence = states[a][b][c].moveCode;
           }
         }
       }
     }
+    if (CMaxSequence[0] !== undefined) {
+      // console.log(int(CMaxSequence[0]));
+      this.input(int(CMaxSequence[0]));
+      // this.input(int(CMaxSequence[1]));
+      // this.input(int(CMaxSequence[2]));
+      return [CMax, CMaxSequence];
 
-    this.input(int(CMaxSequence[0]));
-    return [CMax, CMaxSequence];
+    }
+    return 0;
   }
 
   objective(state) {
@@ -122,7 +137,9 @@ class GameStateManager {
       return s/2;
     }
 
-    let zeroes = state.grid.flat().filter(x => x === 0).length - 1;
+    let zeroes = state.grid.flat().filter(x => x === 0).length-1;
+    // return zeroes;
+    // return s;
     return s * (1 + zeroes*zeroBonus);
   }
 }

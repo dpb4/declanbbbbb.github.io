@@ -4,6 +4,8 @@ class State {
     this.score = 0; 
 
     this.grid[floor(random(4))][floor(random(4))] = 1;
+
+    this.moveCode = "";
   }
 
   applyMove(move) {
@@ -43,8 +45,6 @@ class State {
 
     this.evalScore();
     return rotateGrid(nextGrid, move)
-
-
   }
 
   nextState(move) {
@@ -75,19 +75,20 @@ class State {
     return ns;
   }
 
-  getAllNextStates(states) {
-    let statesList;
+  getAllNextStates() {
+    let statesList = [this.copy()];
     let output = [];
-    if (states === undefined) {
-      statesList = [this.copy()];
-    } else {
-      statesList = [...states];
-    }
+    
     for (let ss of statesList) {
       for (let i = 0; i < 4; i++) {
+
         let s = new State();
         s.setGrid(ss.applyMove(i));
-        output.push(s);
+
+        if (!s.equals(this.copy())) {
+          s.moveCode = this.moveCode + str(i);
+          output.push(s);
+        }
       }
     }
     return output;
@@ -120,6 +121,7 @@ class State {
   }
   
   equals(s) {
+    s.evalScore();
     if (this.score !== s.score) {
       return false;
     }
