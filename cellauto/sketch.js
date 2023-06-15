@@ -7,21 +7,26 @@
 
 let param;
 
-let cellPixelWidth = 20;
+let cellPixelWidth = 4;
 let numCellsX;
 let numCellsY;
 
 let grid;
+let pd, pd2;
 
 function setup() {
 	createCanvas(windowWidth, windowHeight);
-
+	
 	numCellsX = ceil(width/cellPixelWidth);
 	numCellsY = ceil(height/cellPixelWidth);
 
+	pixelDensity(1);
+	pd = pixelDensity();
+	pd2 = pd*pd;
+
 	grid = new Array(numCellsY).fill(0).map(x => Array(numCellsX).fill(0));
 
-	for (let i = 0; i < (numCellsX*numCellsY*0); i++) {
+	for (let i = 0; i < (numCellsX*numCellsY*0.1); i++) {
 		grid[floor(random(numCellsY))][floor(random(numCellsX))] = 1;
 	}
 	frameRate(20);
@@ -29,9 +34,9 @@ function setup() {
 
 function draw() {
 	background(25);
-	
-	let nextGrid = new Array(numCellsY).fill(0).map(x => Array(numCellsX).fill(0));
 
+	print(frameRate());
+	
 	if(mouseIsPressed) {
 		grid[floor(mouseY/cellPixelWidth)][floor(mouseX/cellPixelWidth)] = 1;
 	}
@@ -108,37 +113,43 @@ function draw() {
 				}
 			}
 		}
-	}
-	// print(nextGrid);
-	
-	// for (let y = 0; y < numCellsY; y++) {
-	// 	for (let x = 0; x < numCellsX; x++) {
-	// 		grid[y][x] = nextGrid[y][x];
-	// 	}
-	// }
-	
+	}	
 
 	display();
 }
 
 function display() {
-	noStroke();
-	fill(79, 232, 94);
-	for (let y = 0; y < numCellsY; y++) {
-		for (let x = 0; x < numCellsX; x++) {
-			if (grid[y][x] !== 0) {
-				rect(x*cellPixelWidth, y*cellPixelWidth, cellPixelWidth, cellPixelWidth);
-			}
+	// noStroke();
+	// fill(79, 232, 94);
+	// for (let y = 0; y < numCellsY; y++) {
+	// 	for (let x = 0; x < numCellsX; x++) {
+	// 		if (grid[y][x] !== 0) {
+	// 			rect(x*cellPixelWidth, y*cellPixelWidth, cellPixelWidth, cellPixelWidth);
+	// 		}
+	// 	}
+	// }
+
+	// stroke(0);
+	// strokeWeight(1);
+
+	// for (let y = 0; y < numCellsY; y++) {
+	// 	line(0, y*cellPixelWidth, width, y*cellPixelWidth);
+	// }
+	// for (let x = 0; x < numCellsX; x++) {
+	// 	line(x*cellPixelWidth, 0, x*cellPixelWidth, height);
+	// }
+
+	loadPixels();
+	for (let i = 0; i < width*height; i++) {
+		let x = floor(((i) % width) / cellPixelWidth);
+		let y = floor(((i) / width) / cellPixelWidth);
+		// print(y);
+		if (grid[y][x]) {
+			pixels[i*4 + 0] = 79;
+			pixels[i*4 + 1] = 232;
+			pixels[i*4 + 2] = 94;
+			pixels[i*4 + 3] = 255;
 		}
 	}
-
-	stroke(0);
-	strokeWeight(1);
-
-	for (let y = 0; y < numCellsY; y++) {
-		line(0, y*cellPixelWidth, width, y*cellPixelWidth);
-	}
-	for (let x = 0; x < numCellsX; x++) {
-		line(x*cellPixelWidth, 0, x*cellPixelWidth, height);
-	}
+	updatePixels();
 }
