@@ -1,10 +1,9 @@
 class GameStateManager {
-  constructor(gradientFunction) {
+  constructor(AIDepth) {
     this.score = 0;
     this.state = new State();
+    this.AIDepth = AIDepth-1;
     // this.state.setGrid(sg);
-
-    this.gf = gradientFunction;
   }
   
   displayGrid() {
@@ -95,35 +94,47 @@ class GameStateManager {
     //   }
     // }
     
-    for (let a = 0; a < states.length; a++) {
-      states[a] = states[a].getAllNextStates();
-    }
-
-    for (let a = 0; a < states.length; a++) {
-      for (let b = 0; b < states[a].length; b++) {
-        states[a][b] = states[a][b].getAllNextStates();
+    for (let d = 0; d < this.AIDepth; d++) {
+      for (let a = 0; a < states.length; a++) {
+        states[a] = states[a].getAllNextStates();
       }
-    }
 
+      states = states.flat();
+    }
 
     let CMax = -99999999;
     let CMaxSequence = 0;
+
+    let firstMoveAverages = [0, 0, 0, 0];
+    let firstMoveNumbers = [0, 0, 0, 0];
     for (let a = 0; a < states.length; a++) {
-      for (let b = 0; b < states[a].length; b++) {
-        for (let c = 0; c < states[a][b].length; c++) {
-          if (this.objective(states[a][b][c]) > CMax) {
-            CMax = this.objective(states[a][b][c]);
-            CMaxSequence = states[a][b][c].moveCode;
-          }
-        }
+      if (this.objective(states[a]) > CMax) {
+        CMax = this.objective(states[a]);
+        CMaxSequence = states[a].moveCode;
+      }
+      firstMoveAverages[int(states[a].moveCode[0])] += this.objective(states[a]);
+      firstMoveNumbers[int(states[a].moveCode[0])]++;
+    }
+
+    let maxAvgI = 0;
+    let maxAvg = -999999999;
+    for (let i = 0; i < 4; i++) {
+      firstMoveAverages[i] /= firstMoveNumbers[i];
+    }
+    for (let i = 0; i < 4; i++) {
+      if (firstMoveAverages[i] > maxAvg) {
+        maxAvg = firstMoveAverages[i];
+        maxAvgI = i;
       }
     }
+
     if (CMaxSequence[0] !== undefined) {
       // console.log(int(CMaxSequence[0]));
-      this.input(int(CMaxSequence[0]));
-      // this.input(int(CMaxSequence[1]));
+      // this.input(int(CMaxSequence[0]));
+      this.input(maxAvgI);
       // this.input(int(CMaxSequence[2]));
-      return [CMax, CMaxSequence];
+      return [maxAvgI, firstMoveAverages];
+      // return [CMax, CMaxSequence, firstMoveAverages];
 
     }
     return 0;
@@ -138,8 +149,8 @@ class GameStateManager {
     }
 
     let zeroes = state.grid.flat().filter(x => x === 0).length-1;
-    // return zeroes;
+    return zeroes;
     // return s;
-    return s * (1 + zeroes*zeroBonus);
+    // return s * (1 + zeroes*zeroBonus);
   }
 }

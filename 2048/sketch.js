@@ -13,7 +13,8 @@ let edgeOffset;
 let edgeDarkness;
 let backgroundColour;
 
-let zeroBonus = 1;
+let zeroBonus = 0.5;
+poop
 
 // let sg = [
 //   [1, 1, 2, 3],
@@ -44,7 +45,7 @@ function setup() {
   textAlign(CENTER, CENTER);
   textFont('Inter');
 
-  gsm = new GameStateManager(OPGradient);
+  gsm = new GameStateManager(7);
   
   squareWidth = width/4.5;
   edgeOffset = squareWidth*0.05;
