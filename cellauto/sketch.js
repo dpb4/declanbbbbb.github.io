@@ -29,7 +29,7 @@ function setup() {
 	grid = new Array(numCellsY+1).fill(0).map(x => Array(numCellsX).fill(0));
 
 	// for (let i = 0; i < (numCellsX*numCellsY*0.1); i++) {
-	// 	grid[floor(random(numCellsY))][floor(random(numCellsX))] = 1;
+	// 	grid[floor(random(numCellsY))][floor(random(numCellsX))] = new Sand(floor(random(numCellsX)), floor(random(numCellsY)));
 	// }
 	// frameRate();
 
