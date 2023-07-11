@@ -21,7 +21,7 @@ let roadWidth = 256;
 let speed = 1;
 
 let cameraHeight = 60;
-let followingDistance = 200;
+let followingDistance = 100;
 let cameraViewOffset = 0.5;
 
 let fov = Math.PI/2;
@@ -40,27 +40,23 @@ function loadImages(names, callback) {
 	let result = {};
 	let count  = names.length;
 	
-	// let onload = function() { if (--count == 0) callback(result); };
+	// let onload = 
 
 	for(let n = 0 ; n < names.length ; n++) {
 		
 		let name = names[n];
 
 		let img = document.createElement('img');
-		// img.addEventListener('load', onload);
 		img.src = "assets/" + name + ".png";
-		
-		// let can = document.createElement('canvas');
-		// can.width = img.width;
-		// can.height = img.height;
-		// let ctx = can.getContext("2d");
-		// ctx.drawImage(img, 0, 0);
-		context.fillRect(0, 0, img.width, img.height);
-		context.drawImage(img, 0, 0);
-		// ctx.fillRect(0, 0, 20, 20);
 
-		// result[name] = img;
-		result[name] = context.getImageData(0, 0, img.width, img.height);
+		img.addEventListener('load', () => {
+			context.drawImage(img, 0, 0);
+			result[name] = context.getImageData(0, 0, img.width, img.height);
+
+			if (--count == 0) {
+				callback(result); 
+			}
+		});
 	}
 	callback(result);
 }
@@ -100,7 +96,7 @@ function gameLoop() {
 	// cameraViewOffset += 0.001;
 	// player.y += 1;
 	player.y += 2 + Math.sin(performance.now()/600);
-	camera.y += Math.max(0, player.y - camera.y - followingDistance) * 0.01;
+	camera.y += Math.max(0, player.y - camera.y - followingDistance) * 0.02;
 	// camera.y += 2 + Math.sin(performance.now()/600);
 	// minZ += 0.1;
 	// console.log(minZ)
@@ -132,13 +128,18 @@ function drawCar() {
 
 	for (let y = Math.floor(screenY - screenHeight/2); y < Math.floor(screenY + screenHeight/2); y++) {
 		for (let x = Math.floor(screenX - screenWidth/2); x < Math.floor(screenX + screenWidth/2); x++) {
+			let spriteX = Math.floor(((x - Math.floor(screenX - screenWidth/2)) / screenWidth) * images[911].width);
+			let spriteY = Math.floor(((y - Math.floor(screenY - screenHeight/2)) / screenHeight) * images[911].height);
 
 			let index = 4*(x + y*canvas.width);
-		
-			imageData.data[index] = 255 * brightness;
-			imageData.data[index+1] = 0;
-			imageData.data[index+2] = 0;
-			imageData.data[index+3] = 255;
+			let spriteIndex = 4*(spriteX + spriteY*images[911].width);
+			
+			if (images[911].data[spriteIndex+3] !== 0) {
+				imageData.data[index+0] = images[911].data[spriteIndex+0];
+				imageData.data[index+1] = images[911].data[spriteIndex+1];
+				imageData.data[index+2] = images[911].data[spriteIndex+2];
+				imageData.data[index+3] = images[911].data[spriteIndex+3];
+			}
 		}
 	}
 	// console.log(screenX, screenY, ratio);
