@@ -21,14 +21,15 @@ let roadWidth = 256;
 let speed = 1;
 
 let cameraHeight = 60;
-let followingDistance = 100;
+let followingDistance = 120;
 let cameraViewOffset = 0.5;
+let carPullStrength = 0.03;
 
 let fov = Math.PI/2;
 let projectionDistance;
 
 let camera = {x: 0, y: 0, z: cameraHeight};
-let player = {x: 32, y: followingDistance, z: 0};
+let player = {x: 0, y: followingDistance, z: 0};
 let car = {width: 63, height: 40};
 let images;
 // let carSprite = load("assets/911.png");
@@ -89,17 +90,17 @@ window.onload = () => {
 
 function gameLoop() {
 	
-	display();
 	// context.drawImage(images[911], 0, 0);
-	window.requestAnimationFrame(gameLoop);
-
+	
 	// cameraViewOffset += 0.001;
 	// player.y += 1;
-	player.y += 2 + Math.sin(performance.now()/600);
-	camera.y += Math.max(0, player.y - camera.y - followingDistance) * 0.02;
+	player.y += 2 + 2*Math.sin(performance.now()/600);
+	camera.y += Math.max(0, player.y - camera.y - followingDistance) * carPullStrength;
 	// camera.y += 2 + Math.sin(performance.now()/600);
 	// minZ += 0.1;
 	// console.log(minZ)
+	display();
+	window.requestAnimationFrame(gameLoop);
 }
 
 function updateFOV(num) {
@@ -126,8 +127,10 @@ function drawCar() {
 	let screenWidth = Math.floor(car.width*ratio);
 	let screenHeight = Math.floor(car.height*ratio);
 
+	// console.log(images[911]);
 	for (let y = Math.floor(screenY - screenHeight/2); y < Math.floor(screenY + screenHeight/2); y++) {
 		for (let x = Math.floor(screenX - screenWidth/2); x < Math.floor(screenX + screenWidth/2); x++) {
+
 			let spriteX = Math.floor(((x - Math.floor(screenX - screenWidth/2)) / screenWidth) * images[911].width);
 			let spriteY = Math.floor(((y - Math.floor(screenY - screenHeight/2)) / screenHeight) * images[911].height);
 
@@ -135,10 +138,10 @@ function drawCar() {
 			let spriteIndex = 4*(spriteX + spriteY*images[911].width);
 			
 			if (images[911].data[spriteIndex+3] !== 0) {
-				imageData.data[index+0] = images[911].data[spriteIndex+0];
-				imageData.data[index+1] = images[911].data[spriteIndex+1];
-				imageData.data[index+2] = images[911].data[spriteIndex+2];
-				imageData.data[index+3] = images[911].data[spriteIndex+3];
+				imageData.data[index+0] = images[911].data[spriteIndex+0] * brightness;
+				imageData.data[index+1] = images[911].data[spriteIndex+1] * brightness;
+				imageData.data[index+2] = images[911].data[spriteIndex+2] * brightness;
+				imageData.data[index+3] = images[911].data[spriteIndex+3] * brightness;
 			}
 		}
 	}
