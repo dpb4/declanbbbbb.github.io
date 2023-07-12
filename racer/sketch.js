@@ -10,6 +10,7 @@ let height = window.innerHeight
 || document.body.clientHeight;
 
 let imageData;
+let frameID = 0;
 
 // canvas.style["background-color"] = "rgb(45, 56, 77)";
 canvas.style["image-rendering"] = "pixelated";
@@ -19,11 +20,13 @@ let minZ = 0;
 let roadWidth = 256;
 
 let speed = 1;
+let friction = 0.05;
+let speedConstant = 40;
 
 let cameraHeight = 60;
 let followingDistance = 120;
 let cameraViewOffset = 0.5;
-let carPullStrength = 0.03;
+let carPullStrength = 0.06;
 
 let fov = Math.PI/2;
 let projectionDistance;
@@ -31,6 +34,7 @@ let projectionDistance;
 let camera = {x: 0, y: 0, z: cameraHeight};
 let player = {x: 0, y: followingDistance, z: 0};
 let car = {width: 63, height: 40};
+let cars = [];
 let images;
 // let carSprite = load("assets/911.png");
 
@@ -53,8 +57,10 @@ function loadImages(names, callback) {
 		img.addEventListener('load', () => {
 			context.drawImage(img, 0, 0);
 			result[name] = context.getImageData(0, 0, img.width, img.height);
-
 			if (--count == 0) {
+				console.log("images loaded", performance.now());
+				gameIsRunning = true;
+
 				callback(result); 
 			}
 		});
@@ -64,9 +70,15 @@ function loadImages(names, callback) {
 
 function startGame(loadedImages) {
 	images = loadedImages;
-	window.requestAnimationFrame(gameLoop);
+	frameID = window.requestAnimationFrame(gameLoop);
+}
+
+let endGame = () => {
+	gameIsRunning = false;
+	window.cancelAnimationFrame(frameID);
 }
   
+window.onbeforeunload = endGame;
 
 window.onload = () => {
 
@@ -82,13 +94,15 @@ window.onload = () => {
 	imageData = new ImageData(canvas.width, canvas.height);
 
 
-	gameIsRunning = true;
 	loadImages(['911'], startGame);
 }
 
 
 
 function gameLoop() {
+	if (!gameIsRunning) {
+		return;
+	}
 	
 	// context.drawImage(images[911], 0, 0);
 	
@@ -99,6 +113,7 @@ function gameLoop() {
 	// camera.y += 2 + Math.sin(performance.now()/600);
 	// minZ += 0.1;
 	// console.log(minZ)
+	updateCars();
 	display();
 	window.requestAnimationFrame(gameLoop);
 }
@@ -116,6 +131,12 @@ function getMousePos(canvas, evt) {
     };
 }
 
+function updateCars() {
+	for (c in cars) {
+		c.update();
+	}
+}
+
 function drawCar() {
 	let brightness = Math.min(Math.max(1 - Math.pow((player.y - camera.y) / 10000, 0.6), 0.5), 1);
 
@@ -130,7 +151,6 @@ function drawCar() {
 	// console.log(images[911]);
 	for (let y = Math.floor(screenY - screenHeight/2); y < Math.floor(screenY + screenHeight/2); y++) {
 		for (let x = Math.floor(screenX - screenWidth/2); x < Math.floor(screenX + screenWidth/2); x++) {
-
 			let spriteX = Math.floor(((x - Math.floor(screenX - screenWidth/2)) / screenWidth) * images[911].width);
 			let spriteY = Math.floor(((y - Math.floor(screenY - screenHeight/2)) / screenHeight) * images[911].height);
 
