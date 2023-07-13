@@ -31,9 +31,11 @@ let carPullStrength = 0.06;
 let fov = Math.PI/2;
 let projectionDistance;
 
+// let player = {x: 0, y: followingDistance, z: 0};
+let player;
+// let car = {width: 63, height: 40};
+
 let camera = {x: 0, y: 0, z: cameraHeight};
-let player = {x: 0, y: followingDistance, z: 0};
-let car = {width: 63, height: 40};
 let cars = [];
 let images;
 // let carSprite = load("assets/911.png");
@@ -59,17 +61,18 @@ function loadImages(names, callback) {
 			result[name] = context.getImageData(0, 0, img.width, img.height);
 			if (--count == 0) {
 				console.log("images loaded", performance.now());
-				gameIsRunning = true;
 
 				callback(result); 
 			}
 		});
 	}
-	callback(result);
 }
 
 function startGame(loadedImages) {
 	images = loadedImages;
+	player = new Player('911');
+
+	gameIsRunning = true;
 	frameID = window.requestAnimationFrame(gameLoop);
 }
 
@@ -93,7 +96,6 @@ window.onload = () => {
 
 	imageData = new ImageData(canvas.width, canvas.height);
 
-
 	loadImages(['911'], startGame);
 }
 
@@ -108,7 +110,7 @@ function gameLoop() {
 	
 	// cameraViewOffset += 0.001;
 	// player.y += 1;
-	player.y += 2 + 2*Math.sin(performance.now()/600);
+	// player.y += 2 + 2*Math.sin(performance.now()/600);
 	camera.y += Math.max(0, player.y - camera.y - followingDistance) * carPullStrength;
 	// camera.y += 2 + Math.sin(performance.now()/600);
 	// minZ += 0.1;

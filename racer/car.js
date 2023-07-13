@@ -7,7 +7,7 @@ class Car {
 
         this.vel = {x: 0, y: 0};
         this.acc = {x: 0, y: 0};
-
+        console.log("making car", performance.now())
         this.width = images[this.type].width;
         this.height = images[this.type].height;
 
