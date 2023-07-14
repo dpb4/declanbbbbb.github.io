@@ -20,13 +20,13 @@ let minZ = 0;
 let roadWidth = 256;
 
 let speed = 1;
-let friction = 0.05;
-let speedConstant = 40;
+let friction = 0.001;
+let speedConstant = 18;
 
 let cameraHeight = 60;
 let followingDistance = 120;
 let cameraViewOffset = 0.5;
-let carPullStrength = 0.06;
+let carPullStrength = 0.25;
 
 let fov = Math.PI/2;
 let projectionDistance;
@@ -36,9 +36,8 @@ let player;
 // let car = {width: 63, height: 40};
 
 let camera = {x: 0, y: 0, z: cameraHeight};
-let cars = [];
+// let cars = [];
 let images;
-// let carSprite = load("assets/911.png");
 
 let gameIsRunning = false;
 
@@ -111,11 +110,13 @@ function gameLoop() {
 	// cameraViewOffset += 0.001;
 	// player.y += 1;
 	// player.y += 2 + 2*Math.sin(performance.now()/600);
-	camera.y += Math.max(0, player.y - camera.y - followingDistance) * carPullStrength;
+	camera.y += Math.max(0, player.car.pos.y - camera.y - followingDistance) * carPullStrength;
 	// camera.y += 2 + Math.sin(performance.now()/600);
 	// minZ += 0.1;
 	// console.log(minZ)
 	updateCars();
+	player.update();
+	// console.log(player.car.speedometer());
 	display();
 	window.requestAnimationFrame(gameLoop);
 }
@@ -134,21 +135,22 @@ function getMousePos(canvas, evt) {
 }
 
 function updateCars() {
-	for (c in cars) {
-		c.update();
-	}
+	// for (c in cars) {
+	// 	c.update();
+	// }
+	player.car.update();
 }
 
 function drawCar() {
-	let brightness = Math.min(Math.max(1 - Math.pow((player.y - camera.y) / 10000, 0.6), 0.5), 1);
+	let brightness = Math.min(Math.max(1 - Math.pow((player.car.pos.y - camera.y) / 10000, 0.6), 0.5), 1);
 
-	let ratio = projectionDistance / (player.y - camera.y);
+	let ratio = projectionDistance / (player.car.pos.y - camera.y);
 	
-	let screenX = Math.floor(player.x * ratio) + canvas.width/2;
+	let screenX = Math.floor(player.car.pos.x * ratio) + canvas.width/2;
 	let screenY = Math.floor(camera.z * ratio) + canvas.height/2;
 	
-	let screenWidth = Math.floor(car.width*ratio);
-	let screenHeight = Math.floor(car.height*ratio);
+	let screenWidth = Math.floor(player.car.width*ratio);
+	let screenHeight = Math.floor(player.car.height*ratio);
 
 	// console.log(images[911]);
 	for (let y = Math.floor(screenY - screenHeight/2); y < Math.floor(screenY + screenHeight/2); y++) {
