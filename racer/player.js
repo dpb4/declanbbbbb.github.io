@@ -15,12 +15,27 @@ class Player {
         } else {
             this.car.throttling = false;
         }
+
         if (keyStates['KeyS']) {
             this.car.brake();
             this.car.braking = true;
             // console.log("braking");
         } else {
             this.car.braking = false;
+        }
+
+        if (keyStates['KeyA']) {
+            this.car.turning = true;
+            this.car.turn("left");
+        }
+
+        if (keyStates['KeyD']) {
+            this.car.turning = true;
+            this.car.turn("right");
+        }
+
+        if (!keyStates['KeyA'] && !keyStates['KeyD']) {
+            this.car.turning = false;
         }
     }
 }

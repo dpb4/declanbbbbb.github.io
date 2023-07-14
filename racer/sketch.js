@@ -114,8 +114,8 @@ function gameLoop() {
 	// camera.y += 2 + Math.sin(performance.now()/600);
 	// minZ += 0.1;
 	// console.log(minZ)
-	updateCars();
 	player.update();
+	updateCars();
 	// console.log(player.car.speedometer());
 	display();
 	window.requestAnimationFrame(gameLoop);
