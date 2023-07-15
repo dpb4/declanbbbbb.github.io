@@ -15,6 +15,7 @@ class Car {
         this.accelerationStrength = 0.02;
         this.brakeStrength = 0.05;
         this.turnStrength = 0.01;
+        this.returnToStraight = 0.97;
 
         this.throttling = false;
         this.braking = false;
@@ -32,10 +33,10 @@ class Car {
     turn(direction) {
         if (direction === 'left') {
             this.vel.x -= this.turnStrength;
-            console.log('l', this.vel.x, this.turning)
+            // console.log('l', this.vel.x, this.turning)
         } else if (direction === 'right') {
             this.vel.x += this.turnStrength;
-            console.log('r', this.vel.x, this.turning)
+            // console.log('r', this.vel.x, this.turning)
         }
     }
 
@@ -55,7 +56,7 @@ class Car {
         }
         if (!this.turning) {
             // this.acc.x = 0;
-            this.vel.x = 0;
+            this.vel.x *= this.returnToStraight;
         }
 
         let slowdown = (1 - friction) * (1 - this.drag);

@@ -1,6 +1,7 @@
 class Player {
     constructor(currentCar) {
         this.car = new Car(currentCar, 0, followingDistance, true);
+        this.camera = new Camera(this, 0, 0, cameraHeight, followingDistance, cameraViewOffset, forwardPullStrength, lateralPullStrength, fov);
     }
 
     changeCar(newCar) {
