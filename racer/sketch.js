@@ -20,23 +20,25 @@ let minZ = 0;
 let roadWidth = 256;
 
 let speed = 1;
-let friction = 0.05;
-let speedConstant = 40;
+let friction = 0.001;
+let speedConstant = 18;
 
 let cameraHeight = 60;
 let followingDistance = 120;
 let cameraViewOffset = 0.5;
-let carPullStrength = 0.06;
+let forwardPullStrength = 0.25;
+let lateralPullStrength = 0.05;
 
 let fov = Math.PI/2;
 let projectionDistance;
 
+// let player = {x: 0, y: followingDistance, z: 0};
+let player;
+// let car = {width: 63, height: 40};
+
 let camera = {x: 0, y: 0, z: cameraHeight};
-let player = {x: 0, y: followingDistance, z: 0};
-let car = {width: 63, height: 40};
-let cars = [];
+// let cars = [];
 let images;
-// let carSprite = load("assets/911.png");
 
 let gameIsRunning = false;
 
@@ -59,17 +61,18 @@ function loadImages(names, callback) {
 			result[name] = context.getImageData(0, 0, img.width, img.height);
 			if (--count == 0) {
 				console.log("images loaded", performance.now());
-				gameIsRunning = true;
 
 				callback(result); 
 			}
 		});
 	}
-	callback(result);
 }
 
 function startGame(loadedImages) {
 	images = loadedImages;
+	player = new Player('911');
+
+	gameIsRunning = true;
 	frameID = window.requestAnimationFrame(gameLoop);
 }
 
@@ -93,7 +96,6 @@ window.onload = () => {
 
 	imageData = new ImageData(canvas.width, canvas.height);
 
-
 	loadImages(['911'], startGame);
 }
 
@@ -108,12 +110,15 @@ function gameLoop() {
 	
 	// cameraViewOffset += 0.001;
 	// player.y += 1;
-	player.y += 2 + 2*Math.sin(performance.now()/600);
-	camera.y += Math.max(0, player.y - camera.y - followingDistance) * carPullStrength;
+	// player.y += 2 + 2*Math.sin(performance.now()/600);
+	// camera.y += Math.max(0, player.car.pos.y - camera.y - followingDistance) * carPullStrength;
 	// camera.y += 2 + Math.sin(performance.now()/600);
 	// minZ += 0.1;
 	// console.log(minZ)
+	player.update();
+	player.camera.move();
 	updateCars();
+	// console.log(player.car.speedometer());
 	display();
 	window.requestAnimationFrame(gameLoop);
 }
@@ -132,25 +137,26 @@ function getMousePos(canvas, evt) {
 }
 
 function updateCars() {
-	for (c in cars) {
-		c.update();
-	}
+	// for (c in cars) {
+	// 	c.update();
+	// }
+	player.car.update();
 }
 
 function drawCar() {
-	let brightness = Math.min(Math.max(1 - Math.pow((player.y - camera.y) / 10000, 0.6), 0.5), 1);
+	let brightness = Math.min(Math.max(1 - Math.pow((player.car.pos.y - player.camera.pos.y) / 10000, 0.6), 0.5), 1);
 
-	let ratio = projectionDistance / (player.y - camera.y);
+	let ratio = projectionDistance / (player.car.pos.y - player.camera.pos.y);
 	
-	let screenX = Math.floor(player.x * ratio) + canvas.width/2;
-	let screenY = Math.floor(camera.z * ratio) + canvas.height/2;
+	let screenX = Math.floor((player.car.pos.x - player.camera.pos.x) * ratio) + canvas.width/2;
+	let screenY = Math.floor(player.camera.pos.z * ratio) + canvas.height/2;
 	
-	let screenWidth = Math.floor(car.width*ratio);
-	let screenHeight = Math.floor(car.height*ratio);
+	let screenWidth = Math.floor(player.car.width*ratio);
+	let screenHeight = Math.floor(player.car.height*ratio);
 
 	// console.log(images[911]);
-	for (let y = Math.floor(screenY - screenHeight/2); y < Math.floor(screenY + screenHeight/2); y++) {
-		for (let x = Math.floor(screenX - screenWidth/2); x < Math.floor(screenX + screenWidth/2); x++) {
+	for (let y = Math.max(Math.floor(screenY - screenHeight/2), 0); y < Math.min(Math.floor(screenY + screenHeight/2), canvas.height); y++) {
+		for (let x = Math.max(Math.floor(screenX - screenWidth/2), 0); x < Math.min(Math.floor(screenX + screenWidth/2), canvas.width); x++) {
 			let spriteX = Math.floor(((x - Math.floor(screenX - screenWidth/2)) / screenWidth) * images[911].width);
 			let spriteY = Math.floor(((y - Math.floor(screenY - screenHeight/2)) / screenHeight) * images[911].height);
 
@@ -177,10 +183,10 @@ function display() {
 
 		if (rayZ > minZ) {
 			
-			let intersectionY = projectionDistance / rayZ * camera.z + camera.y;
+			let intersectionY = projectionDistance / rayZ * player.camera.pos.z + player.camera.pos.y;
 			// print(intersectionY);
 			// console.log(intersectionY);
-			let brightness = Math.min(Math.max(1 - Math.pow((intersectionY - camera.y) / 10000, 0.6), 0.5), 1);
+			let brightness = Math.min(Math.max(1 - Math.pow((intersectionY - player.camera.pos.y) / 10000, 0.6), 0.5), 1);
 			
 			// if (count < 20) {
 			// 	console.log(intersectionY, brightness);
@@ -190,7 +196,7 @@ function display() {
 			let c = {r: 0, g: 0, b: 0};
 			for (let x = 0; x < canvas.width; x++) {
 				let rayX = x - canvas.width/2;
-				let intersectionX = (intersectionY - camera.y) * rayX / projectionDistance;
+				let intersectionX = (intersectionY - player.camera.pos.y) * rayX / projectionDistance + player.camera.pos.x;
 				let index = 4 * (x + y*canvas.width);
 				
 				if (Math.abs(intersectionX) < roadWidth/2) {
