@@ -28,20 +28,21 @@ let BTeamColour;
 let boardColour;
 let backgroundColour;
 
-let currentState;
+let game;
 
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 
-	currentState = new State();
-	currentState.grid[5][0] = 1;
-	currentState.grid[4][0] = 1;
-	currentState.grid[3][0] = 1;
-	currentState.grid[2][0] = 1;
-	currentState.grid[1][3] = 2;
-	currentState.grid[3][4] = 2;
-	currentState.grid[5][2] = 2;
-	currentState.grid[2][5] = 1;
+	game = new Game();
+	// currentState = new State();
+	// currentState.grid[5][0] = 1;
+	// currentState.grid[4][0] = 1;
+	// currentState.grid[3][0] = 1;
+	// currentState.grid[2][0] = 1;
+	// currentState.grid[1][3] = 2;
+	// currentState.grid[3][4] = 2;
+	// currentState.grid[5][2] = 2;
+	// currentState.grid[2][5] = 1;
 
 	
 	boardWidthPixels = window.width*0.6;
@@ -62,34 +63,11 @@ function setup() {
 	backgroundColour = color(240);
 }
 
-function drawBoard() {
-	push();
-
-	noStroke();
-	fill(boardColour);
-	translate(translation.x, translation.y);
-	rect(-(piecePadding/2) - LREdgePadding, -(piecePadding/2), boardWidthPixels+(piecePadding) + LREdgePadding*2, boardHeightPixels+(piecePadding), 2);
-
-	fill(backgroundColour);
-
-	for (let i = 0; i < w; i++) {
-		for (let j = 0; j < h; j++) {
-			if (currentState.grid[j][i] === 1) {
-				fill(ATeamColour);
-			} else if (currentState.grid[j][i] === 2) {
-				fill(BTeamColour);
-			} else {
-				fill(backgroundColour);
-			}
-			ellipse((i+0.5)*boardWidthPixels/7, (j+0.5)*boardHeightPixels/6, pieceRadius, pieceRadius);
-		}
-	}
-
-	pop();
+function mouseClicked() {
+	game.makeHumanMove();
 }
-
 
 function draw() {
 	background(backgroundColour);
-	drawBoard();
+	game.display();
 }
